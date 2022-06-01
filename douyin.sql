@@ -76,6 +76,7 @@ DROP TABLE IF EXISTS `video`;
 CREATE TABLE `video`  (
   `id` int(0) NOT NULL AUTO_INCREMENT,
   `author_id` int(0) NOT NULL,
+	`title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `play_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `cover_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `create_date` datetime(0) NOT NULL,

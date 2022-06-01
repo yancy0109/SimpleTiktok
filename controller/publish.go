@@ -1,9 +1,12 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yancy0109/SimpleTiktok/service"
+	"log"
 	"net/http"
+	"os/exec"
 	"path/filepath"
 )
 
@@ -28,6 +31,7 @@ func Publish(context *gin.Context) {
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		})
+		return
 	}
 	//对文件进行处理
 	//1.获取文件名字
@@ -35,16 +39,34 @@ func Publish(context *gin.Context) {
 	//2.生成文件保存名
 	finalname := "user11_" + filename
 	//3.生成保存路径
-	saveFile := filepath.Join("./public/", finalname)
+	saveFile := filepath.Join("./public/video/", finalname)
 	//开始保存
-	if err := context.SaveUploadedFile(data, finalname); err != nil {
+	if err := context.SaveUploadedFile(data, saveFile); err != nil {
 		context.JSON(http.StatusOK, Response{
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		})
+		return
+	}
+	//save first frame
+	saveImage := filepath.Join("./public/image/", finalname+".jpg")
+	fmt.Println(saveFile)
+	cmd := exec.Command("ffmpeg", "-i", "./"+saveFile, "-r", "1", "-s", "600x400", "-f", "singlejpeg", "-frames:v", "1", saveImage)
+	//var stdout, stderr bytes.Buffer
+	//cmd.Stderr = &stderr
+	//cmd.Stdout = &stdout
+	err = cmd.Run()
+	//fmt.Printf("out:n%sn err:n%sn", string(stdout.Bytes()), string(stderr.Bytes()))
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %sn", err)
+		context.JSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  "保存失败",
+		})
+		return
 	}
 	//调取service层存储数据至数据库
-	if err := service.SavePublish(userid, saveFile, "", title); err != nil {
+	if err := service.SavePublish(userid, saveFile, saveImage, title); err != nil {
 		context.JSON(http.StatusOK, Response{
 			StatusCode: 1,
 			StatusMsg:  "保存失败",

@@ -1,12 +1,15 @@
 package service
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yancy0109/SimpleTiktok/repository"
 	"mime/multipart"
+	"os/exec"
 	"path/filepath"
+	"time"
 )
 
 func PublishSave(authorId int64, title string, data *multipart.FileHeader, context *gin.Context) error {
@@ -40,7 +43,7 @@ func (f *PublishVideoFlow) Do() error {
 	if finalPath, err = f.SaveVideo(); err != nil {
 		return err
 	}
-	if err := f.SaveImage(finalPath); err != nil {
+	if err := f.SaveCover(finalPath); err != nil {
 		return err
 	}
 	if err := f.Publish(); err != nil {
@@ -59,7 +62,7 @@ func (f *PublishVideoFlow) SaveVideo() (string, error) {
 	//1.获取文件名字
 	filename := f.Data.Filename
 	//2.生成文件保存名
-	finalname := fmt.Sprint(f.AuthorId) + "_" + filename
+	finalname := fmt.Sprint(f.AuthorId) + "_" + fmt.Sprint(time.Now().Unix()) + "_" + filename
 	//3.生成保存路径
 	saveVedioPath := filepath.Join("./public/video/", finalname)
 	f.SaveVedioPath = saveVedioPath
@@ -70,25 +73,19 @@ func (f *PublishVideoFlow) SaveVideo() (string, error) {
 	return finalname, nil
 }
 
-func (f *PublishVideoFlow) SaveImage(finalname string) error {
-	//videoPath := "./public/vedio/" + finalname
+func (f *PublishVideoFlow) SaveCover(finalname string) error {
+	videoPath := "./public/video/" + finalname
 	//保存视频流首帧作为封面
-	saveCovel := filepath.Join("./public/cover/", finalname+".jpg")
+	saveCovel := filepath.Join("./public/cover/", finalname+"_"+fmt.Sprint(time.Now().Unix())+".jpg")
 	f.SaveImagePath = saveCovel
-	//cmd := exec.Command("ffmpeg", "-i", "./"+videoPath, "-r", "1", "-s", "600x400", "-f", "singlejpeg", "-frames:v", "1", saveCovel)
-	//var stdout, stderr bytes.Buffer
-	//cmd.Stderr = &stderr
-	//cmd.Stdout = &stdout
-	//err = cmd.Run()
-	//fmt.Printf("out:n%sn err:n%sn", string(stdout.Bytes()), string(stderr.Bytes()))
-	//if err != nil {
-	//	log.Fatalf("cmd.Run() failed with %sn", err)
-	//	context.JSON(http.StatusOK, Response{
-	//		StatusCode: 1,
-	//		StatusMsg:  "保存失败",
-	//	})
-	//	return
-	//}
+	cmd := exec.Command("ffmpeg", "-i", videoPath, "-r", "1", "-s", "600x400", "-f", "singlejpeg", "-frames:v", "1", "./"+saveCovel)
+	var stdout, stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	cmd.Stdout = &stdout
+	if err := cmd.Run(); err != nil {
+		fmt.Println(stdout.String(), "||", stderr.String())
+		return err
+	}
 	return nil
 }
 func (f *PublishVideoFlow) Publish() error {

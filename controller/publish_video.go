@@ -37,6 +37,7 @@ func Publish(context *gin.Context) {
 			StatusCode: 1,
 			StatusMsg:  "保存失败",
 		})
+		return
 	}
 	context.JSON(http.StatusOK, Response{
 		StatusCode: 0,

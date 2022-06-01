@@ -16,7 +16,7 @@ type Video struct {
 }
 
 func (Video) TableName() string {
-	return "Video"
+	return "video"
 }
 
 type VideoDao struct {

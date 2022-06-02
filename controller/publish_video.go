@@ -3,11 +3,12 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/yancy0109/SimpleTiktok/middleware"
 	"github.com/yancy0109/SimpleTiktok/service"
 	"net/http"
 )
 
-type Response struct {
+type PublishResponse struct {
 	StatusCode int32  `json:"status_code"`
 	StatusMsg  string `json:"status_msg"`
 }
@@ -16,15 +17,21 @@ func Publish(context *gin.Context) {
 	//解析context中 data token title
 	title := context.PostForm("title")
 	token := context.PostForm("token")
-	//检验token获取user
+	//检验token 获取用户Id
 	var authorId int64
-	if token != "" {
-		authorId = 2123123
+	var err error
+	authorId, err = middleware.ParseToken(token)
+	if err != nil {
+		context.JSON(http.StatusOK, PublishResponse{
+			StatusCode: 1,
+			StatusMsg:  "token无效",
+		})
+		return
 	}
 	data, err := context.FormFile("data")
 	//接收文件失败返回
 	if err != nil {
-		context.JSON(http.StatusOK, Response{
+		context.JSON(http.StatusOK, PublishResponse{
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		})
@@ -33,13 +40,13 @@ func Publish(context *gin.Context) {
 	//调取service层储存
 	if err := service.PublishSave(authorId, title, data, context); err != nil {
 		fmt.Println(err)
-		context.JSON(http.StatusOK, Response{
+		context.JSON(http.StatusOK, PublishResponse{
 			StatusCode: 1,
 			StatusMsg:  "保存失败",
 		})
 		return
 	}
-	context.JSON(http.StatusOK, Response{
+	context.JSON(http.StatusOK, PublishResponse{
 		StatusCode: 0,
 		StatusMsg:  "uploaded successfully",
 	})

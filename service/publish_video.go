@@ -96,7 +96,7 @@ func (f *PublishVideoFlow) Publish() error {
 		PlayUrl:  f.SaveVedioPath,
 		CoverUrl: f.SaveImagePath,
 	}
-	if err := repository.NewVedioDaoInstance().PublishVideo(vedio); err != nil {
+	if err := repository.NewVideoDaoInstance().PublishVideo(vedio); err != nil {
 		return err
 	}
 	return nil

@@ -25,7 +25,7 @@ type VideoDao struct {
 var videoDao *VideoDao
 var videoOnce sync.Once
 
-func NewVedioDaoInstance() *VideoDao {
+func NewVideoDaoInstance() *VideoDao {
 	videoOnce.Do(
 		func() {
 			videoDao = &VideoDao{}

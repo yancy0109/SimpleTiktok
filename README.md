@@ -5,18 +5,25 @@ mysql脚本文件douyin.sql用于本地数据库测试
 
 
 # 视频上传功能
-使用FFMPEG处理本地视频提取首帧作为封面，需要以下环境  
-下面是linux安装,Windows也可以安装ffmpeg，但是就很麻烦，需要安装linux命令支持之类的？我使用的Ubuntu  
+使用FFMPEG处理本地视频提取首帧作为封面，通过exec.Command()调用命令，需要以下环境
+## Windows
+### FFmpeg安装
+FFmpeg链接(https://ffmpeg.org/)  
+选择windows安装 解压安装包至特定文件夹  
+将 安装目录下xxx\bin 加入至环境变量  
+ffmpeg -version 测试输出版本信息
+### mysql省略
+## Linux
+### FFmpeg安装即可
+sudo apt install ffmpeg
 FFmpeg链接(https://ffmpeg.org/)
-## Mysql
-### 安装
+### Mysql
+#### 安装
 sudo apt install mysql-server mysql-client  
-### 查看初始账号密码
+#### 查看初始账号密码
 sudo cat /etc/mysql/debian.conf  
-### 以初始账号密码登录
+#### 以初始账号密码登录
 mysql -u___ -p____
-### 修改root账户密码为root
+#### 修改root账户密码为root
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
 flush privileges;
-## FFmpeg安装即可
-sudo apt install ffmpeg

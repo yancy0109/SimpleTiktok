@@ -76,12 +76,13 @@ func (f *PublishVideoFlow) SaveVideo() (string, error) {
 func (f *PublishVideoFlow) SaveCover(finalname string) error {
 	videoPath := "./public/video/" + finalname
 	//保存视频流首帧作为封面
-	saveCovel := filepath.Join("./public/cover/", finalname+"_"+fmt.Sprint(time.Now().Unix())+".jpg")
+	saveCovel := filepath.Join("./public/cover/", finalname+".jpg")
 	f.SaveImagePath = saveCovel
-	cmd := exec.Command("ffmpeg", "-i", videoPath, "-r", "1", "-s", "600x400", "-f", "singlejpeg", "-frames:v", "1", "./"+saveCovel)
+	cmd := exec.Command("ffmpeg", "-y", "-i", videoPath, "-r", "1", "-s", "600x400", "-vframes", "1", "./"+saveCovel)
 	var stdout, stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	cmd.Stdout = &stdout
+	fmt.Println(stdout.String(), "||", stderr.String())
 	if err := cmd.Run(); err != nil {
 		fmt.Println(stdout.String(), "||", stderr.String())
 		return err

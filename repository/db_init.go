@@ -1,26 +1,10 @@
 package repository
 
 import (
-	"fmt"
-	"time"
-
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
-
-type User struct {
-        ID      uint
-        User_id string `gorm:"default:(-)"`
-        User_name string `gorm:"default:(-)"`
-        Password string `gorm:"default:(-)"`
-        Salt    string `gorm:"default:(-)"`
-        Create_date time.Time
-}
-
-func (User) TableName() string{
-	return "user"
-}
 
 var db *gorm.DB
 
@@ -40,14 +24,3 @@ func Init() error {
 	return err
 }
 
-func create_user(userid string, username string, password string, salt string)error {
-	user0 := User{User_id:userid, User_name:username, Password:password, Salt:salt, Create_date: time.Now()}
-
-	result := db.Create(&user0)
-
-	if result.Error != nil {
-		fmt.Printf("failed to insert new user, err: %e\n", result.Error)
-		return result.Error
-	}
-	return nil
-}

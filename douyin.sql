@@ -60,7 +60,7 @@ create index `follow_index` on `follow` (`follow`);
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (
   `id` int(0) NOT NULL AUTO_INCREMENT,
-  `user_id` int(0) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户id',
+  `user_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户id',
   `user_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户名',
   `password` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `salt` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '加密盐值',

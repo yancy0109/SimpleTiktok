@@ -34,7 +34,7 @@ func CreateUser(username string, password string, salt string) (int, error) {
 
 func FindUser(username string) (User, error) {
 	user0 := User{User_name: username}
-	result := db.First(&user0)
+	result := db.Where("user_name = ?", username).First(&user0)
 	err := result.Error
 	if err != nil {
 		fmt.Printf("failed to find user, err: %e\n", err)

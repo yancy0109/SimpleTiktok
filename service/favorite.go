@@ -10,11 +10,7 @@ type FavoriteService struct {
 
 var favoriteDao = repository.NewfavoriteDaoInstance()
 
-func (f FavoriteService) Update(userid string, videoid string, actionType string) error {
-	userId, err := strconv.ParseInt(userid, 10, 64)
-	if err != nil {
-		return err
-	}
+func (f FavoriteService) Update(userid int64, videoid string, actionType string) error {
 	videoId, err := strconv.ParseInt(videoid, 10, 64)
 	if err != nil {
 		return err
@@ -24,7 +20,7 @@ func (f FavoriteService) Update(userid string, videoid string, actionType string
 		return err
 	}
 	favoriteRecord := repository.FavoriteRecord{
-		Userid:  userId,
+		Userid:  userid,
 		Videoid: videoId,
 		Status:  status,
 	}

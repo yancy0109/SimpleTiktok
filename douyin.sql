@@ -15,7 +15,7 @@
 */
 drop database IF EXISTS `douyin`;
 create database `douyin` character set utf8 collate utf8_bin;
-use `douyin`
+use `douyin`;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;

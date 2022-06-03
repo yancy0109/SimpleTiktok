@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"github.com/subosito/gotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -22,7 +21,6 @@ func Init() error {
 	host := os.Getenv("MYSQL_HOST")
 	port := os.Getenv("MYSQL_PORT")
 	dsn := user + ":" + pass + "@tcp(" + host + ":" + port + ")/" + dbname + "?charset=utf8&parseTime=True&loc=Local"
-	fmt.Println(dsn)
 	db, err = gorm.Open(mysql.New(mysql.Config{
 		DSN:                       dsn,   // DSN data source name
 		DefaultStringSize:         256,   // string 类型字段的默认长度

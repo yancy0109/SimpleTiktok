@@ -89,7 +89,7 @@ func Register(context *gin.Context){
 		fmt.Printf("failed to get global maker\n")
 		context.JSON(http.StatusOK, UserRegisterResponse{
 			Status_code: 2,
-			Status_msg: "Register failed: token gen issue",
+			Status_msg: "Register failed: Token gen issue",
 			User_id: 0,
 			Token: "",
 		})
@@ -97,7 +97,7 @@ func Register(context *gin.Context){
 	}
 	duration, err := time.ParseDuration("60s")
 	if err != nil {
-		fmt.Printf("failed to create token duration, err: %e\n", err)
+		fmt.Printf("failed to create Token duration, err: %e\n", err)
 		context.JSON(http.StatusOK, UserRegisterResponse{
 			Status_code: 3,
 			Status_msg: "Register failed: time duration issue",
@@ -105,23 +105,23 @@ func Register(context *gin.Context){
 			Token: "",
 		})
 	}
-	token, err := maker.CreateToken(strconv.Itoa(mainid), duration)
+	Token, err := maker.CreateToken(strconv.Itoa(mainid), duration)
 	if err != nil{
-		fmt.Printf("failed to create token, err: %e\n", err)
+		fmt.Printf("failed to create Token, err: %e\n", err)
 		context.JSON(http.StatusOK, UserRegisterResponse{
 			Status_code: 2,
-			Status_msg: "Register failed: token gen issue",
+			Status_msg: "Register failed: Token gen issue",
 			User_id: 0,
 			Token: "",
 		})
 		return
 	}
-	fmt.Printf("success, User_id: %v, Token: %v\n", mainid, token)
+	fmt.Printf("success, User_id: %v, Token: %v\n", mainid, Token)
 	context.JSON(http.StatusOK, UserRegisterResponse{
 		Status_code: 0,
 		Status_msg: "Register success",
 		User_id: mainid,
-		Token: token,
+		Token: Token,
 	})
 }
 
@@ -158,7 +158,7 @@ func Login(context *gin.Context){
 		fmt.Printf("failed to get maker\n")
 		context.JSON(http.StatusOK, UserLoginResponse{
 			Status_code: 2,
-			Status_msg: "Login failed: token gen issue",
+			Status_msg: "Login failed: Token gen issue",
 			User_id: 0,
 			Token: "",
 		})
@@ -166,32 +166,32 @@ func Login(context *gin.Context){
 	}
 	duration, err := time.ParseDuration("60s")
 	if err != nil {
-		fmt.Printf("failed to create token duration, err: %e\n", err)
-		context.JSON(http.StatusOK, UserRegisterResponse{
+		fmt.Printf("failed to create Token duration, err: %e\n", err)
+		context.JSON(http.StatusOK, UserLoginResponse{
 			Status_code: 3,
 			Status_msg: "Login failed: time duration issue",
 			User_id: 0,
 			Token: "",
 		})
 	}
-	token, err := maker.CreateToken(strconv.Itoa(int(user.ID)), duration)
+	Token, err := maker.CreateToken(strconv.Itoa(int(user.ID)), duration)
 	if err != nil{
-		fmt.Printf("failed to create token\n")
-		context.JSON(http.StatusOK, UserRegisterResponse{
+		fmt.Printf("failed to create Token\n")
+		context.JSON(http.StatusOK, UserLoginResponse{
 			Status_code: 2,
-			Status_msg: "Register failed: token gen issue",
+			Status_msg: "Login failed: Token gen issue",
 			User_id: 0,
 			Token: "",
 		})
 		return
 	}
 
-	fmt.Printf("success, User_id: %v, Token: %v\n", user.ID, token)
+	fmt.Printf("success, User_id: %v, Token: %v\n", user.ID, Token)
 	context.JSON(http.StatusOK, UserLoginResponse{
 		Status_code: 0,
 		Status_msg: "Login success",
 		User_id: int(user.ID),
-		Token: token,
+		Token: Token,
 	})
 }
 

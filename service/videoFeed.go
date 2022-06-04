@@ -1,7 +1,10 @@
 package service
 
 import (
+	"errors"
+	"fmt"
 	"github.com/yancy0109/SimpleTiktok/repository"
+	"gorm.io/gorm"
 	"sync"
 )
 
@@ -39,19 +42,52 @@ type VideoService struct {
 
 var videoListDao = repository.NewVideoListInstance()
 
-func (*VideoService) GetVideoFeed(latestTime int, userId int64) *VideoFeed {
+func (*VideoService) GetVideoFeed(latestTime int64, userId int64) *VideoFeed {
 	var videoFeed VideoFeed
+	videoFeed.StatusCode = 0
 	videos, _ := videoListDao.VideoList(latestTime)
 	videoList := make([]Video, len(videos))
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(len(videos))
-	for index, video := range videos {
+	for index, indexVideo := range videos {
 		//多线程查询video的信息们
+		indexVideo := indexVideo
+		//此处需要对indexVideo进行阴影处理，否则会产生一个数据竞争
 		go func(video *repository.Video, userId int64, index int) {
-			author, _ := videoListDao.AuthorInformation(video.AuthorId, userId)
-			countCount, _ := videoListDao.VideoCommentCount(video.Id)
-			IsFavorite, _ := videoListDao.FavoriteStatus(video.Id, userId)
-			favoriteCount, _ := videoListDao.VideoFavoriteCount(video.Id)
+			fmt.Println(index, video.Id)
+			defer waitGroup.Done()
+			author, err1 := videoListDao.AuthorInformation(video.AuthorId, userId)
+			if err1 != nil {
+				if errors.Is(err1, gorm.ErrRecordNotFound) {
+					author.UserName = "用户已注销"
+				} else {
+					videoFeed.StatusCode++
+				}
+			}
+			countCount, err2 := videoListDao.VideoCommentCount(video.Id)
+			if err2 != nil {
+				if errors.Is(err2, gorm.ErrRecordNotFound) {
+					countCount = 0
+				} else {
+					videoFeed.StatusCode++
+				}
+			}
+			IsFavorite, err3 := videoListDao.FavoriteStatus(video.Id, userId)
+			if err3 != nil {
+				if errors.Is(err3, gorm.ErrRecordNotFound) {
+					IsFavorite = false
+				} else {
+					videoFeed.StatusCode++
+				}
+			}
+			favoriteCount, err4 := videoListDao.VideoFavoriteCount(video.Id)
+			if err4 != nil {
+				if errors.Is(err4, gorm.ErrRecordNotFound) {
+					favoriteCount = 0
+				} else {
+					videoFeed.StatusCode++
+				}
+			}
 			videoList[index] = Video{
 				Author: User{
 					FollowCount:   author.FollowCount,
@@ -68,8 +104,18 @@ func (*VideoService) GetVideoFeed(latestTime int, userId int64) *VideoFeed {
 				PlayURL:       video.PlayUrl,
 				Title:         video.Title,
 			}
-		}(&video, userId, index)
+		}(&indexVideo, userId, index)
 	}
 	waitGroup.Wait()
+	videoFeed.VideoList = videoList
+	var msg string
+	if userId == -1 {
+		msg = "用户未登录"
+	} else {
+		msg = "正常"
+	}
+	videoFeed.StatusMsg = &msg
+	nextTime := videos[len(videos)-1].CreateDate.Unix()
+	videoFeed.NextTime = &nextTime
 	return &videoFeed
 }

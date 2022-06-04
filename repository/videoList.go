@@ -30,12 +30,14 @@ func NewVideoListInstance() *VideoListDao {
 	return videoListDao
 }
 
-func (*VideoListDao) VideoList(latestTime int) ([]Video, error) {
+func (*VideoListDao) VideoList(latestTime int64) ([]Video, error) {
 
 	listSize := 10
+	latestTime *= 1000
 	//根据latestTime查询符合条件的视频及其信息
 	var videoList []Video
-	result := db.Table("video").Where("create_date < ? and status <> 0", latestTime).Order("create_date desc").Limit(listSize).Find(&videoList)
+	//这里要将数据库里面的时间格式转化为时间戳格式再进行比较
+	result := db.Table("video").Where("UNIX_TIMESTAMP(create_date) < ? and status <> 0", latestTime).Order("create_date desc").Limit(listSize).Find(&videoList)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -43,48 +45,49 @@ func (*VideoListDao) VideoList(latestTime int) ([]Video, error) {
 	return videoList, nil
 }
 func (*VideoListDao) AuthorInformation(AuthorId int64, userId int64) (*Author, error) {
-	var author Author
+	var author *Author
+	author = new(Author)
 	author.Id = AuthorId
 	//根据authorId查询作者的名称信息
-	result := db.Table("user").Where("id = ?", userId).First(&author.UserName)
+	result := db.Table("user").Select("user_name").Where("id = ?", userId).Limit(1).Find(&author.UserName)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
 			author.UserName = "用户已注销"
 			author.FollowCount = 0
 			author.FollowerCount = 0
 			author.IsFollow = false
-			return &author, nil
+			return author, nil
 		}
 		return nil, result.Error
 	}
 	//根据userId和authorId查询是否关注了
-	resultIsFollow := db.Table("follow").Select("is_del <> 1").Where("follow = ? and be_follow = ?", userId, AuthorId).First(author.IsFollow)
+	resultIsFollow := db.Table("follow").Select("is_del <> 1").Where("follow = ? and be_follow = ?", userId, AuthorId).Limit(1).Find(&author.IsFollow)
 	if resultIsFollow.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
 			author.IsFollow = false
 		} else {
-			return &author, resultIsFollow.Error
+			return author, resultIsFollow.Error
 		}
 	}
 	//查询author的粉丝数
-	resultFollowerCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", AuthorId).First(author.FollowerCount)
+	resultFollowerCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", AuthorId).Limit(1).Find(&author.FollowerCount)
 	if resultFollowerCount != nil {
-		return &author, resultFollowerCount.Error
+		return author, resultFollowerCount.Error
 	}
 	//查询author的关注数量
-	resultFollowCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and follower = ?", AuthorId).First(author.FollowCount)
+	resultFollowCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and follower = ?", AuthorId).Limit(1).Find(&author.FollowCount)
 	if resultFollowCount != nil {
-		return &author, resultFollowCount.Error
+		return author, resultFollowCount.Error
 	}
 
 	//返回
-	return &author, nil
+	return author, nil
 }
 
 // FavoriteStatus 查询是否建立了喜欢
 func (*VideoListDao) FavoriteStatus(videoId int64, userId int64) (bool, error) {
 	status := 0
-	result := db.Table("video_favorite").Select("status").Where("video_id = ? and user_id = ?", videoId, userId).First(&status)
+	result := db.Table("video_favorite").Select("status").Where("video_id = ? and user_id = ?", videoId, userId).Limit(1).Find(&status)
 	if result.Error != nil {
 		return false, result.Error
 	}
@@ -95,7 +98,7 @@ func (*VideoListDao) FavoriteStatus(videoId int64, userId int64) (bool, error) {
 // VideoFavoriteCount 视频的喜欢数
 func (*VideoListDao) VideoFavoriteCount(videoId int64) (int, error) {
 	var count int
-	result := db.Table("video_favorite").Select("count(*)").Where("video_id = ? and status <> 0", videoId).First(&count)
+	result := db.Table("video_favorite").Select("count(*)").Where("video_id = ? and status <> 0", videoId).Limit(1).Find(&count)
 	if result != nil {
 		return 0, nil
 	}
@@ -105,7 +108,7 @@ func (*VideoListDao) VideoFavoriteCount(videoId int64) (int, error) {
 // VideoCommentCount 视频的评论数
 func (*VideoListDao) VideoCommentCount(videoId int64) (int, error) {
 	var count int
-	result := db.Table("comment").Select("count(*)").Where("video_id = ? and status <> 0", videoId).First(&count)
+	result := db.Table("comment").Select("count(*)").Where("video_id = ? and status <> 0", videoId).Limit(1).Find(&count)
 	if result != nil {
 		return 0, nil
 	}

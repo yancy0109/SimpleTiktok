@@ -33,7 +33,7 @@ func NewVideoListInstance() *VideoListDao {
 func (*VideoListDao) VideoList(latestTime int64) ([]Video, error) {
 
 	listSize := 10
-	latestTime *= 1000
+	//latestTime *= 1000
 	//根据latestTime查询符合条件的视频及其信息
 	var videoList []Video
 	//这里要将数据库里面的时间格式转化为时间戳格式再进行比较

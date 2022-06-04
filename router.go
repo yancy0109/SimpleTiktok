@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sora-blue/SimpleTiktok/controller"
+	"github.com/yancy0109/SimpleTiktok/controller"
 )
 
 func InitRouter(r *gin.Engine) {
@@ -20,7 +20,7 @@ func InitRouter(r *gin.Engine) {
 	//apiRouter.GET("/publish/list/", controller.PublishList)
 	//
 	//// extra apis - I
-	//apiRouter.POST("/favorite/action/", controller.FavoriteAction)
+	apiRouter.POST("/favorite/action/", controller.FavoriteAction)
 	//apiRouter.GET("/favorite/list/", controller.FavoriteList)
 	//apiRouter.POST("/comment/action/", controller.CommentAction)
 	//apiRouter.GET("/comment/list/", controller.CommentList)
@@ -30,4 +30,5 @@ func InitRouter(r *gin.Engine) {
 	//apiRouter.GET("/relation/follow/list/", controller.FollowList)
 	//apiRouter.GET("/relation/follower/list/", controller.FollowerList)
 	apiRouter.GET("/")
+	apiRouter.GET("/feed", controller.VideoFeed)
 }

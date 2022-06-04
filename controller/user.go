@@ -30,7 +30,7 @@ type User_rep struct {
 	Name string `json:"name"`
 	Follow_count int `json:"follow_count"`
 	Follower_count int `json:"follower_count"`
-	Is_follow bool `json:"is_follow"`
+	Is_follow bool `json:"is_follow"` 
 }
 
 type UserInfoResponse struct {

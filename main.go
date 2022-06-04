@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/yancy0109/SimpleTiktok/repository"
+	"github.com/sora-blue/SimpleTiktok/repository"
 	"os"
 )
 

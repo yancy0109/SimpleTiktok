@@ -1,4 +1,4 @@
-module github.com/yancy0109/SimpleTiktok
+module github.com/sora-blue/SimpleTiktok
 
 go 1.18
 

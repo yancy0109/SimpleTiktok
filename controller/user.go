@@ -26,6 +26,20 @@ type UserLoginResponse struct{
 	Token string
 }
 
+type User_rep struct {
+	Id int
+	Name string
+	Follow_count int
+	Follower_count int
+	Is_follow bool
+}
+
+type UserInfoResponse struct {
+	Status_code int
+	Status_msg string
+	User []User_rep
+}
+
 func InitUser() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -72,6 +86,7 @@ func Register(context *gin.Context){
 	}
 	maker := GetGlobalMaker()
 	if maker == nil {
+		fmt.Printf("failed to get global maker\n")
 		context.JSON(http.StatusOK, UserRegisterResponse{
 			Status_code: 2,
 			Status_msg: "Register failed: token gen issue",
@@ -92,6 +107,7 @@ func Register(context *gin.Context){
 	}
 	token, err := maker.CreateToken(strconv.Itoa(mainid), duration)
 	if err != nil{
+		fmt.Printf("failed to create token, err: %e\n", err)
 		context.JSON(http.StatusOK, UserRegisterResponse{
 			Status_code: 2,
 			Status_msg: "Register failed: token gen issue",
@@ -100,6 +116,7 @@ func Register(context *gin.Context){
 		})
 		return
 	}
+	fmt.Printf("success, User_id: %v, Token: %v\n", mainid, token)
 	context.JSON(http.StatusOK, UserRegisterResponse{
 		Status_code: 0,
 		Status_msg: "Register success",
@@ -115,6 +132,7 @@ func Login(context *gin.Context){
 	user, err := repository.FindUser(username)
 
 	if err != nil {
+		fmt.Printf("failed to find user\n")
 		context.JSON(http.StatusOK, UserLoginResponse{
 			Status_code: 1,
 			Status_msg: "Login failed: cannot find user",
@@ -126,6 +144,7 @@ func Login(context *gin.Context){
 	underVerify := pwHash(password + user.Salt)[0:50]
 
 	if underVerify != user.Password {
+		fmt.Printf("password not matched\n")
 		context.JSON(http.StatusOK, UserLoginResponse{
 			Status_code: 4,
 			Status_msg: "Login failed: password not matched",
@@ -136,6 +155,7 @@ func Login(context *gin.Context){
 	}
 	maker := GetGlobalMaker()
 	if maker == nil {
+		fmt.Printf("failed to get maker\n")
 		context.JSON(http.StatusOK, UserLoginResponse{
 			Status_code: 2,
 			Status_msg: "Login failed: token gen issue",
@@ -156,6 +176,7 @@ func Login(context *gin.Context){
 	}
 	token, err := maker.CreateToken(strconv.Itoa(int(user.ID)), duration)
 	if err != nil{
+		fmt.Printf("failed to create token\n")
 		context.JSON(http.StatusOK, UserRegisterResponse{
 			Status_code: 2,
 			Status_msg: "Register failed: token gen issue",
@@ -165,10 +186,27 @@ func Login(context *gin.Context){
 		return
 	}
 
+	fmt.Printf("success, User_id: %v, Token: %v\n", user.ID, token)
 	context.JSON(http.StatusOK, UserLoginResponse{
 		Status_code: 0,
 		Status_msg: "Login success",
 		User_id: int(user.ID),
 		Token: token,
+	})
+}
+
+func UserInfo(context *gin.Context){
+	users := make([]User_rep, 2)
+	users[0] = User_rep{
+		Id: 0,
+		Name: "Sheep Sherry",
+		Follow_count: 0,
+		Follower_count: 0,
+		Is_follow: false,
+	}
+	context.JSON(http.StatusOK, UserInfoResponse{
+		Status_code: 0,
+		Status_msg: "OK",
+		User: users,
 	})
 }

@@ -3,45 +3,40 @@ package controller
 import (
 	"crypto/sha256"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sora-blue/SimpleTiktok/repository"
+	"github.com/yancy0109/SimpleTiktok/repository"
 )
 
 type UserRegisterResponse struct{
-	Status_code int
-	Status_msg string
-	User_id int
-	Token string
+	Status_code int `json:"status_code"`
+	Status_msg string `json:"status_msg"`
+	User_id int `json:"user_id"`
+	Token string `json:"token"`
 }
 
 type UserLoginResponse struct{
-	Status_code int
-	Status_msg string
-	User_id int
-	Token string
+	Status_code int `json:"status_code"`
+	Status_msg string `json:"status_msg"`
+	User_id int `json:"user_id"`
+	Token string `json:"token"`
 }
 
 type User_rep struct {
-	Id int
-	Name string
-	Follow_count int
-	Follower_count int
-	Is_follow bool
+	Id int `json:"id"`
+	Name string `json:"name"`
+	Follow_count int `json:"follow_count"`
+	Follower_count int `json:"follower_count"`
+	Is_follow bool `json:"is_follow"` 
 }
 
 type UserInfoResponse struct {
-	Status_code int
-	Status_msg string
-	User []User_rep
-}
-
-func InitUser() {
-	rand.Seed(time.Now().UnixNano())
+	Status_code int `json:"status_code"`
+	Status_msg string `json:"status_msg"`
+	User []User_rep `json:"user"`
 }
 
 func salt_gen(username string) int64{

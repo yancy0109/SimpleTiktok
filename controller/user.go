@@ -65,6 +65,19 @@ func Register(context *gin.Context){
 	salt := strconv.FormatInt(salt_gen(username), 10)
 	password = pwHash(password+salt)[0:50];
 
+	_, err := repository.FindUser(username)
+
+	if err == nil {
+		fmt.Printf("user already exists")
+		context.JSON(http.StatusOK, UserRegisterResponse{
+			Status_code: 4,
+			Status_msg: "Register failed: user already exists",
+			User_id: 0,
+			Token: "",
+		})
+		return
+	}
+
 //	userid_int := time.Now().UnixNano()
 //	userid := strconv.FormatInt(userid_int, 10)
 

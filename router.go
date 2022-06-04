@@ -30,4 +30,5 @@ func InitRouter(r *gin.Engine) {
 	//apiRouter.GET("/relation/follow/list/", controller.FollowList)
 	//apiRouter.GET("/relation/follower/list/", controller.FollowerList)
 	apiRouter.GET("/")
+	apiRouter.GET("/feed", controller.VideoFeed)
 }

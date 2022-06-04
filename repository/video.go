@@ -6,13 +6,13 @@ import (
 )
 
 type Video struct {
-	Id         int64     `gorm:"primarykey"json:"id"`
-	AuthorId   int64     `gorm:"author_id"json:"authorId"`
-	Title      string    `gorm:"title"json:"title"`
-	PlayUrl    string    `gorm:"play_url"json:"playUrl"`
-	CoverUrl   string    `gorm:"cover_url"json:"coverUrl"`
+	Id         int64     `gorm:"primarykey" json:"id"`
+	AuthorId   int64     `gorm:"author_id"  json:"authorId"`
+	Title      string    `gorm:"title"      json:"title"`
+	PlayUrl    string    `gorm:"play_url"   json:"playUrl"`
+	CoverUrl   string    `gorm:"cover_url"  json:"coverUrl"`
 	CreateDate time.Time `gorm:"create_date"json:"CreateDate"`
-	Status     bool      `gorm:"status"json:"status"`
+	Status     bool      `gorm:"status"     json:"status"`
 }
 
 func (Video) TableName() string {

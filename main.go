@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sora-blue/SimpleTiktok/repository"
+	"github.com/yancy0109/SimpleTiktok/repository"
 	"os"
 )
 

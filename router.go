@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sora-blue/SimpleTiktok/controller"
+	"github.com/yancy0109/SimpleTiktok/controller"
 )
 
 func InitRouter(r *gin.Engine) {

@@ -99,7 +99,7 @@ func (*VideoListDao) FavoriteStatus(videoId int64, userId int64) (bool, error) {
 func (*VideoListDao) VideoFavoriteCount(videoId int64) (int, error) {
 	var count int
 	result := db.Table("video_favorite").Select("count(*)").Where("video_id = ? and status <> 0", videoId).Limit(1).Find(&count)
-	if result != nil {
+	if result.Error != nil {
 		return 0, nil
 	}
 	return count, nil
@@ -109,7 +109,7 @@ func (*VideoListDao) VideoFavoriteCount(videoId int64) (int, error) {
 func (*VideoListDao) VideoCommentCount(videoId int64) (int, error) {
 	var count int
 	result := db.Table("comment").Select("count(*)").Where("video_id = ? and status <> 0", videoId).Limit(1).Find(&count)
-	if result != nil {
+	if result.Error != nil {
 		return 0, nil
 	}
 	return count, nil

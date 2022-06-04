@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"github.com/yancy0109/SimpleTiktok/repository"
 	"gorm.io/gorm"
 	"sync"
@@ -54,7 +53,6 @@ func (*VideoService) GetVideoFeed(latestTime int64, userId int64) *VideoFeed {
 		indexVideo := indexVideo
 		//此处需要对indexVideo进行阴影处理，否则会产生一个数据竞争
 		go func(video *repository.Video, userId int64, index int) {
-			fmt.Println(index, video.Id)
 			defer waitGroup.Done()
 			author, err1 := videoListDao.AuthorInformation(video.AuthorId, userId)
 			if err1 != nil {

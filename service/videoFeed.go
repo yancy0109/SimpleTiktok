@@ -113,7 +113,7 @@ func (*VideoService) GetVideoFeed(latestTime int64, userId int64) *VideoFeed {
 		msg = "正常"
 	}
 	videoFeed.StatusMsg = &msg
-	nextTime := videos[len(videos)-1].CreateDate.Unix()
+	nextTime := videos[len(videos)-1].CreateDate.Unix() / 1000
 	videoFeed.NextTime = &nextTime
 	return &videoFeed
 }

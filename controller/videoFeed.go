@@ -16,7 +16,7 @@ func VideoFeed(context *gin.Context) {
 	latestTimeStr := context.Query("latest_time")
 	var latestTime int64
 	if latestTimeStr == "" {
-		latestTime = time.Now().Unix() / 1000
+		latestTime = time.Now().Unix()
 	} else {
 		latestTime, _ = strconv.ParseInt(latestTimeStr, 10, 64)
 	}

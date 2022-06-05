@@ -33,7 +33,7 @@ func CommentAction(context *gin.Context) {
 	//检查token
 	userid, err := middleware.ParseToken(token)
 	if err != nil {
-		context.JSON(http.StatusOK, CommentResponse{
+		context.JSON(http.StatusOK, Response{
 			StatusCode: 1,
 			StatusMsg:  "token无效",
 		})
@@ -46,7 +46,7 @@ func CommentAction(context *gin.Context) {
 	if actionType == "1" {
 		comment_Id := commentService.INSERT(userid, videoid, actionType, comment_text)
 		if err != nil {
-			context.JSON(http.StatusOK, CommentResponse{
+			context.JSON(http.StatusOK, Response{
 				StatusCode: 1,
 				StatusMsg:  err.Error()})
 		} else {
@@ -70,11 +70,11 @@ func CommentAction(context *gin.Context) {
 		comment_id := context.Query("comment_id")
 		err = commentService.UPDATE(userid, videoid, actionType, comment_id)
 		if err != nil {
-			context.JSON(http.StatusOK, CommentResponse{
+			context.JSON(http.StatusOK, Response{
 				StatusCode: 1,
 				StatusMsg:  err.Error()})
 		} else {
-			context.JSON(http.StatusOK, CommentResponse{
+			context.JSON(http.StatusOK, Response{
 				StatusCode: 0,
 				StatusMsg:  "successfully",
 			})

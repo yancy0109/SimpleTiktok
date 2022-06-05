@@ -9,12 +9,14 @@ import (
 )
 
 var db *gorm.DB
+var ResourceDirectory string
 
 func Init() error {
 	err := gotenv.Load()
 	if err != nil {
 		return err
 	}
+	ResourceDirectory = os.Getenv("RESOURCE_DIRECTORY")
 	user := os.Getenv("MYSQL_USER")
 	pass := os.Getenv("MYSQL_PASSWORD")
 	dbname := os.Getenv("MYSQL_DBNAME")
@@ -34,4 +36,3 @@ func Init() error {
 	})
 	return err
 }
-

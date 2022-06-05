@@ -29,9 +29,12 @@ func VideoFeed(context *gin.Context) {
 		//检查token
 		userId, err := middleware.ParseToken(token)
 		if err != nil {
-			context.JSON(http.StatusOK, Response{
+			msg := "token无效"
+			context.JSON(http.StatusOK, service.VideoFeed{
+				NextTime:   nil,
 				StatusCode: 1,
-				StatusMsg:  "token无效",
+				StatusMsg:  &msg,
+				VideoList:  nil,
 			})
 			return
 		}

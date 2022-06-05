@@ -44,7 +44,7 @@ func CommentAction(context *gin.Context) {
 	comment_text := context.Query("comment_text")
 	var commentService service.CommentService
 	if actionType == "1" {
-		comment_Id := commentService.INSERT(userid, videoid, actionType, comment_text)
+		comment_Id, err := commentService.INSERT(userid, videoid, actionType, comment_text)
 		if err != nil {
 			context.JSON(http.StatusOK, Response{
 				StatusCode: 1,

@@ -10,7 +10,7 @@ type CommentService struct {
 
 var commentDao = repository.NewCommentDaoInstance()
 
-func (f CommentService) INSERT(authorid int64, videoid string, actionType string, content string) int64 {
+func (f CommentService) INSERT(authorid int64, videoid string, actionType string, content string) (int64, error) {
 	videoId, _ := strconv.ParseInt(videoid, 10, 64)
 	status, _ := strconv.ParseInt(actionType, 10, 64)
 	commentRecord := repository.CommentRecord{
@@ -19,7 +19,7 @@ func (f CommentService) INSERT(authorid int64, videoid string, actionType string
 		Status:   status,
 		Content:  content,
 	}
-	return commentDao.UpdateStatus(commentRecord)
+	return commentDao.UpdateStatus(commentRecord), nil
 }
 
 func (f CommentService) UPDATE(authorid int64, videoid string, actionType string, comment_id string) error {

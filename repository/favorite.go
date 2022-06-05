@@ -30,26 +30,35 @@ func (FavoriteRecord) TableName() string {
 	return "video_favorite"
 }
 
-func (*FavoriteDao) GetList(favoriteRecord FavoriteRecord) []FavoriteRecord {
-	var results []FavoriteRecord
-	db.Table("video_favorite").Where("video_id = ? AND Status = ?", favoriteRecord.Userid, 1).Find(&results) // (*sql.Row)
-	return results
+func (*FavoriteDao) GetList(UserId int64) ([]Video, error) {
+	var results []Video
+	result := db.Table("video v").Select("v.id , v.author_id ,v.title ,v.play_url ,v.cover_url , v.create_date").Joins("left join video_favorite f on f.user_id = ? where v.id = f.video_id AND v.status <> 0", UserId).Scan(&results)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	//返回
+	return results, nil
 }
 
-//返回是否点赞
-func (*FavoriteDao) favorite(favoriteRecord FavoriteRecord) bool {
+// Favorite 返回是否点赞
+func (*FavoriteDao) Favorite(UserId int64, VideoId int64) (bool, error) {
 	var id int64
 	//查询id是否存在
-	db.Raw("SELECT id FROM video_favorite WHERE user_id = ? AND video_id = ? AND Status = 1 ", favoriteRecord.Userid, favoriteRecord.Videoid).Scan(&id)
+	result := db.Raw("SELECT id FROM video_favorite WHERE user_id = ? AND video_id = ? AND Status = 1 ", UserId, VideoId).Scan(&id)
 	// == 0 表示不存在该记录
-	return id != 0
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return id != 0, nil
 }
 
-func (*FavoriteDao) GetCount(favoriteRecord FavoriteRecord) int64 {
+func (*FavoriteDao) GetCount(VideoId int64) (int64, error) {
 	var count int64
-	db.Model(&favoriteRecord).Where("video_id = ? AND Status = ? ", favoriteRecord.Videoid, 1).Count(&count)
-
-	return count
+	result := db.Table("video_favorite").Where("video_id = ? AND Status = ? ", VideoId, 1).Count(&count)
+	if result.Error != nil {
+		return -1, result.Error
+	}
+	return count, nil
 }
 
 func (*FavoriteDao) UpdateStatus(favoriteRecord FavoriteRecord) error {

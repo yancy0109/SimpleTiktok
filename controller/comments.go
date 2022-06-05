@@ -68,7 +68,7 @@ func CommentAction(context *gin.Context) {
 		}
 	} else if actionType == "2" {
 		comment_id := context.Query("comment_id")
-		err = commentService.UPDATE(userid, videoid, actionType, comment_id)
+		err := commentService.UPDATE(userid, videoid, actionType, comment_id)
 		if err != nil {
 			context.JSON(http.StatusOK, Response{
 				StatusCode: 1,

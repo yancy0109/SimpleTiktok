@@ -65,7 +65,7 @@ func (f *PublishVideoFlow) SaveVideo() (string, error) {
 	finalname := fmt.Sprint(f.AuthorId) + "_" + fmt.Sprint(time.Now().Unix()) + "_" + filename
 	//3.生成保存路径
 	saveVedioPath := filepath.Join("./public/video/", finalname)
-	f.SaveVedioPath = "/static/video/" + filename
+	f.SaveVedioPath = "/static/video/" + finalname
 	//开始保存
 	if err := f.Context.SaveUploadedFile(f.Data, saveVedioPath); err != nil {
 		return "", err

@@ -12,6 +12,11 @@ FFmpeg链接(https://ffmpeg.org/)
 选择windows安装 解压安装包至特定文件夹  
 将 安装目录下xxx\bin 加入至环境变量  
 ffmpeg -version 测试输出版本信息
+
+#视频流接口实现上传
+有逻辑漏洞和代码不规范请多多指教
+
+
 ### mysql省略
 ## Linux
 ### FFmpeg安装即可

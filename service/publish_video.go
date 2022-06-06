@@ -1,13 +1,11 @@
 package service
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yancy0109/SimpleTiktok/repository"
 	"mime/multipart"
-	"os/exec"
 	"path/filepath"
 	"time"
 )
@@ -74,19 +72,19 @@ func (f *PublishVideoFlow) SaveVideo() (string, error) {
 }
 
 func (f *PublishVideoFlow) SaveCover(finalname string) error {
-	videoPath := "./public/video/" + finalname
-	//保存视频流首帧作为封面
-	saveCovel := filepath.Join("./public/cover/", finalname+".jpg")
-	f.SaveImagePath = saveCovel
-	cmd := exec.Command("ffmpeg", "-y", "-i", videoPath, "-r", "1", "-s", "600x400", "-vframes", "1", "./"+saveCovel)
-	var stdout, stderr bytes.Buffer
-	cmd.Stderr = &stderr
-	cmd.Stdout = &stdout
-	fmt.Println(stdout.String(), "||", stderr.String())
-	if err := cmd.Run(); err != nil {
-		fmt.Println(stdout.String(), "||", stderr.String())
-		return err
-	}
+	//videoPath := "./public/video/" + finalname
+	////保存视频流首帧作为封面
+	//saveCovel := filepath.Join("./public/cover/", finalname+".jpg")
+	//f.SaveImagePath = saveCovel
+	//cmd := exec.Command("ffmpeg", "-y", "-i", videoPath, "-r", "1", "-s", "600x400", "-vframes", "1", "./"+saveCovel)
+	//var stdout, stderr bytes.Buffer
+	//cmd.Stderr = &stderr
+	//cmd.Stdout = &stdout
+	//fmt.Println(stdout.String(), "||", stderr.String())
+	//if err := cmd.Run(); err != nil {
+	//	fmt.Println(stdout.String(), "||", stderr.String())
+	//	return err
+	//}
 	return nil
 }
 func (f *PublishVideoFlow) Publish() error {

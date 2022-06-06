@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/yancy0109/SimpleTiktok/repository"
 	"gorm.io/gorm"
-	"path/filepath"
 	"sync"
 	"time"
 )
@@ -122,11 +121,11 @@ func GetVideoInformation(videos []repository.Video, userId int64) ([]Video, int6
 					Name:          author.UserName,
 				},
 				CommentCount:  int64(countCount),
-				CoverURL:      filepath.Join(repository.ResourceDirectory, video.CoverUrl),
+				CoverURL:      repository.ResourceDirectory + video.CoverUrl,
 				FavoriteCount: int64(favoriteCount),
 				ID:            video.Id,
 				IsFavorite:    IsFavorite,
-				PlayURL:       filepath.Join(repository.ResourceDirectory, video.PlayUrl),
+				PlayURL:       repository.ResourceDirectory + video.PlayUrl,
 				Title:         video.Title,
 			}
 		}(&indexVideo, userId, index)

@@ -15,8 +15,22 @@ type PublishResponse struct {
 
 func Publish(context *gin.Context) {
 	//解析context中 data token title
-	title := context.PostForm("title")
-	token := context.PostForm("token")
+	title, exist := context.GetPostForm("title")
+	if !exist {
+		context.JSON(http.StatusOK, PublishResponse{
+			StatusCode: 1,
+			StatusMsg:  "缺少title",
+		})
+		return
+	}
+	token, exist := context.GetPostForm("token")
+	if !exist {
+		context.JSON(http.StatusOK, PublishResponse{
+			StatusCode: 1,
+			StatusMsg:  "缺少token",
+		})
+		return
+	}
 	//检验token 获取用户Id
 	var authorId int64
 	var err error

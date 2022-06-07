@@ -1,5 +1,7 @@
 package service
 
+import "github.com/yancy0109/SimpleTiktok/repository"
+
 type VideoListModal struct {
 	StatusCode int64   `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  *string `json:"status_msg"`  // 返回状态描述
@@ -7,6 +9,8 @@ type VideoListModal struct {
 }
 type VideoListService struct {
 }
+
+var videoListDao = repository.NewVideoListInstance()
 
 func (*VideoListService) GetVideoList(userId int64) *VideoListModal {
 	var videoListModal VideoListModal

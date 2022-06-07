@@ -40,8 +40,6 @@ type User struct {
 type VideoService struct {
 }
 
-var videoListDao = repository.NewVideoListInstance()
-
 func (*VideoService) GetVideoFeed(latestTime int64, userId int64) *VideoFeed {
 	var videoFeed VideoFeed
 	//查询视频列表

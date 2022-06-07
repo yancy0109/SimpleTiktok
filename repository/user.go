@@ -6,20 +6,20 @@ import (
 )
 
 type User struct {
-        ID      int64
-        User_id int `gorm:"default:(-)"`
-        User_name string `gorm:"default:(-)"`
-        Password string `gorm:"default:(-)"`
-        Salt    string `gorm:"default:(-)"`
-        Create_date time.Time
+	ID          int64
+	User_id     int    `gorm:"default:(-)"`
+	User_name   string `gorm:"default:(-)"`
+	Password    string `gorm:"default:(-)"`
+	Salt        string `gorm:"default:(-)"`
+	Create_date time.Time
 }
 
-func (User) TableName() string{
+func (User) TableName() string {
 	return "user"
 }
 
 func CreateUser(username string, password string, salt string) (int64, error) {
-	user0 := User{User_id:time.Now().Nanosecond(), User_name:username, Password:password, Salt:salt, Create_date: time.Now()}
+	user0 := User{User_id: time.Now().Nanosecond(), User_name: username, Password: password, Salt: salt, Create_date: time.Now()}
 
 	result := db.Create(&user0)
 
@@ -43,3 +43,13 @@ func FindUser(username string) (User, error) {
 	return user0, err
 }
 
+func FindUserById(id int64) (User, error) {
+	user := User{ID: id}
+	result := db.Where("id = ?", id).First(&user)
+	err := result.Error
+	if err != nil {
+		fmt.Printf("failed to find user, err: %e\n", err)
+		return User{}, err
+	}
+	return user, err
+}

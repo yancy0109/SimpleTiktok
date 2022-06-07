@@ -19,8 +19,8 @@ func PublishList(context *gin.Context) {
 		context.JSON(http.StatusOK, videoFeed)
 	} else {
 		//检查token
-		tokenUserId, err := middleware.ParseToken(token)
-		if err != nil || tokenUserId != userId {
+		_, err := middleware.ParseToken(token)
+		if err != nil {
 			msg := "token无效"
 			context.JSON(http.StatusOK, service.VideoListModal{
 				StatusCode: 1,

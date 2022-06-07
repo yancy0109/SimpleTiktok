@@ -4,7 +4,9 @@ import (
 	"errors"
 	"github.com/yancy0109/SimpleTiktok/repository"
 	"gorm.io/gorm"
+	"path/filepath"
 	"sync"
+	"time"
 )
 
 type VideoFeed struct {
@@ -43,10 +45,35 @@ var videoListDao = repository.NewVideoListInstance()
 
 func (*VideoService) GetVideoFeed(latestTime int64, userId int64) *VideoFeed {
 	var videoFeed VideoFeed
-	videoFeed.StatusCode = 0
+	//查询视频列表
 	videos, _ := videoListDao.VideoList(latestTime)
-	videoList := make([]Video, len(videos))
+	//查询视频的信息
+	videoList, code := GetVideoInformation(videos, userId)
+	videoFeed.StatusCode = code
+	videoFeed.VideoList = videoList
+	var msg string
+	if userId == -1 {
+		msg = "用户未登录"
+	} else {
+		msg = "正常"
+	}
+	videoFeed.StatusMsg = &msg
+	var nextTime int64
+	if len(videos) <= 0 {
+		nextTime = time.Now().Unix()
+	} else {
+		nextTime = videos[len(videos)-1].CreateDate.Unix()
+	}
+
+	videoFeed.NextTime = &nextTime
+	return &videoFeed
+}
+
+// GetVideoInformation 通过videoListDao.VideoList查到的的列表，得到作者、评论数、喜欢数等信息
+func GetVideoInformation(videos []repository.Video, userId int64) ([]Video, int64) {
 	var waitGroup sync.WaitGroup
+	videoFeedStaticCode := int64(0)
+	videoList := make([]Video, len(videos))
 	waitGroup.Add(len(videos))
 	for index, indexVideo := range videos {
 		//多线程查询video的信息们
@@ -59,7 +86,7 @@ func (*VideoService) GetVideoFeed(latestTime int64, userId int64) *VideoFeed {
 				if errors.Is(err1, gorm.ErrRecordNotFound) {
 					author.UserName = "用户已注销"
 				} else {
-					videoFeed.StatusCode++
+					videoFeedStaticCode++
 				}
 			}
 			countCount, err2 := videoListDao.VideoCommentCount(video.Id)
@@ -67,7 +94,7 @@ func (*VideoService) GetVideoFeed(latestTime int64, userId int64) *VideoFeed {
 				if errors.Is(err2, gorm.ErrRecordNotFound) {
 					countCount = 0
 				} else {
-					videoFeed.StatusCode++
+					videoFeedStaticCode++
 				}
 			}
 			IsFavorite, err3 := videoListDao.FavoriteStatus(video.Id, userId)
@@ -75,7 +102,7 @@ func (*VideoService) GetVideoFeed(latestTime int64, userId int64) *VideoFeed {
 				if errors.Is(err3, gorm.ErrRecordNotFound) {
 					IsFavorite = false
 				} else {
-					videoFeed.StatusCode++
+					videoFeedStaticCode++
 				}
 			}
 			favoriteCount, err4 := videoListDao.VideoFavoriteCount(video.Id)
@@ -83,7 +110,7 @@ func (*VideoService) GetVideoFeed(latestTime int64, userId int64) *VideoFeed {
 				if errors.Is(err4, gorm.ErrRecordNotFound) {
 					favoriteCount = 0
 				} else {
-					videoFeed.StatusCode++
+					videoFeedStaticCode++
 				}
 			}
 			videoList[index] = Video{
@@ -95,25 +122,17 @@ func (*VideoService) GetVideoFeed(latestTime int64, userId int64) *VideoFeed {
 					Name:          author.UserName,
 				},
 				CommentCount:  int64(countCount),
-				CoverURL:      video.CoverUrl,
+				CoverURL:      filepath.Join(repository.ResourceDirectory, video.CoverUrl),
 				FavoriteCount: int64(favoriteCount),
 				ID:            video.Id,
 				IsFavorite:    IsFavorite,
-				PlayURL:       video.PlayUrl,
+				PlayURL:       filepath.Join(repository.ResourceDirectory, video.PlayUrl),
 				Title:         video.Title,
 			}
 		}(&indexVideo, userId, index)
 	}
 	waitGroup.Wait()
-	videoFeed.VideoList = videoList
-	var msg string
-	if userId == -1 {
-		msg = "用户未登录"
-	} else {
-		msg = "正常"
-	}
-	videoFeed.StatusMsg = &msg
-	nextTime := videos[len(videos)-1].CreateDate.Unix() / 1000
-	videoFeed.NextTime = &nextTime
-	return &videoFeed
+	return videoList, videoFeedStaticCode
 }
+
+//通过

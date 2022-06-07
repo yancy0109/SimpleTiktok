@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-        ID      uint
+        ID      int64
         User_id int `gorm:"default:(-)"`
         User_name string `gorm:"default:(-)"`
         Password string `gorm:"default:(-)"`
@@ -18,7 +18,7 @@ func (User) TableName() string{
 	return "user"
 }
 
-func CreateUser(username string, password string, salt string) (int, error) {
+func CreateUser(username string, password string, salt string) (int64, error) {
 	user0 := User{User_id:time.Now().Nanosecond(), User_name:username, Password:password, Salt:salt, Create_date: time.Now()}
 
 	result := db.Create(&user0)
@@ -29,7 +29,7 @@ func CreateUser(username string, password string, salt string) (int, error) {
 	}
 	// userid deprecated, primary key used instead
 	// return int(time.Now().UnixNano()), result.Error
-	return int(user0.ID), nil
+	return user0.ID, nil
 }
 
 func FindUser(username string) (User, error) {
@@ -42,7 +42,4 @@ func FindUser(username string) (User, error) {
 	}
 	return user0, err
 }
-//func FindUsers(username string) (User[], error) {
-//	return make([]User, 0), nil
-//}
 

@@ -44,6 +44,16 @@ func (*VideoListDao) VideoList(latestTime int64) ([]Video, error) {
 	//返回
 	return videoList, nil
 }
+func (*VideoListDao) VideoListForUserId(userId int64) ([]Video, error) {
+	var videoList []Video
+	//通过userId进行查询，查询结果按照时间倒序
+	result := db.Table("video").Where("author_id = ? and status <> 0", userId).Order("create_date desc").Find(&videoList)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	//返回
+	return videoList, nil
+}
 func (*VideoListDao) AuthorInformation(AuthorId int64, userId int64) (*Author, error) {
 	var author *Author
 	author = new(Author)

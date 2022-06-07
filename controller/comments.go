@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/yancy0109/SimpleTiktok/middleware"
+	"github.com/yancy0109/SimpleTiktok/repository"
 	"github.com/yancy0109/SimpleTiktok/service"
 	"net/http"
 	"time"
@@ -14,10 +15,10 @@ type CommentResponse struct {
 	Comment    Comment `json:"comment"`
 }
 type Comment struct {
-	Content    string   `json:"content"`     // 评论内容
-	CreateDate string   `json:"create_date"` // 评论发布日期，格式 mm-dd
-	ID         int64    `json:"id"`          // 评论id
-	User       User_rep `json:"user"`        // 评论用户信息
+	Content    string            `json:"content"`     // 评论内容
+	CreateDate string            `json:"create_date"` // 评论发布日期，格式 mm-dd
+	ID         int64             `json:"id"`          // 评论id
+	User       repository.Author `json:"user"`        // 评论用户信息
 }
 
 //type User_rep struct {
@@ -45,6 +46,7 @@ func CommentAction(context *gin.Context) {
 	var commentService service.CommentService
 	if actionType == "1" {
 		comment_Id, err := commentService.INSERT(userid, videoid, actionType, comment_text)
+		users, err := repository.NewVideoListInstance().AuthorInformation(userid, userid)
 		if err != nil {
 			context.JSON(http.StatusOK, Response{
 				StatusCode: 1,
@@ -55,12 +57,12 @@ func CommentAction(context *gin.Context) {
 				StatusMsg:  "successfully",
 				Comment: Comment{
 					ID: comment_Id,
-					User: User_rep{
-						Id:             0,
-						Name:           "",
-						Follow_count:   0,
-						Follower_count: 0,
-						Is_follow:      false,
+					User: repository.Author{
+						Id:            userid,
+						UserName:      users.UserName,
+						FollowCount:   users.FollowerCount,
+						FollowerCount: users.FollowerCount,
+						IsFollow:      users.IsFollow,
 					},
 					Content:    comment_text,
 					CreateDate: time.Now().Format("01/02"),

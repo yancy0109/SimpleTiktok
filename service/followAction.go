@@ -34,29 +34,21 @@ func (*FollowActionService) UpdateFollowStatus(follow int64, beFollow int64, act
 			}
 		}
 	} else {
-		//有信息校验是否删除了
-		if followStatus.IsDel == 1 {
-			//已经删除了这个关系
-			if action == 1 {
-				err := followActionAction.UpdateStatus(follow, beFollow, followStatus.Id, 0)
-				if err != nil {
-					return nil, err, 1
-				}
+		//有信息 校验是否删除了
+		isDel := action - 1
+		if followStatus.IsDel == isDel {
+			code = 1
+			if isDel == 0 {
+				msg = "已关注"
 			} else {
 				msg = "未关注"
 			}
 		} else {
-			//还没有删除这个关系
-			if action == 2 {
-				err := followActionAction.UpdateStatus(follow, beFollow, followStatus.Id, 1)
-				if err != nil {
-					return nil, err, 1
-				}
-			} else {
-				msg = "已关注"
+			err := followActionAction.UpdateStatus(follow, beFollow, followStatus.Id, isDel)
+			if err != nil {
+				return nil, err, 1
 			}
 		}
-
 	}
 	return &msg, nil, code
 }

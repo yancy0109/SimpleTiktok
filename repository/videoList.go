@@ -11,11 +11,11 @@ type VideoListDao struct {
 // Author 视频作者信息
 // User
 type Author struct {
-	Id            int64  `gorm:id`
-	UserName      string `gorm:user_name`
-	FollowCount   int64  `gorm:Follow_Count`
-	FollowerCount int64  `gorm:Follower_Count`
-	IsFollow      bool   `gorm:Is_Follow`
+	Id            int64  `gorm:"id" json:"id"`
+	UserName      string `gorm:"user_name" json:"name"`
+	FollowCount   int64  `gorm:"Follow_Count" json:"follow_count"`
+	FollowerCount int64  `gorm:"Follower_Count" json:"follower_count"`
+	IsFollow      bool   `gorm:"Is_Follow" json:"is_follow"`
 }
 
 //单例模式

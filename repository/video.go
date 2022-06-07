@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+	"gorm.io/gorm"
 	"sync"
 	"time"
 )
@@ -11,7 +13,7 @@ type Video struct {
 	Title      string    `gorm:"title"      json:"title"`
 	PlayUrl    string    `gorm:"play_url"   json:"playUrl"`
 	CoverUrl   string    `gorm:"cover_url"  json:"coverUrl"`
-	CreateDate time.Time `gorm:"create_date"json:"CreateDate"`
+	CreateDate time.Time `gorm:"create_date" json:"CreateDate"`
 	Status     bool      `gorm:"status"     json:"status"`
 }
 
@@ -33,11 +35,21 @@ func NewVideoDaoInstance() *VideoDao {
 	return videoDao
 }
 
+//发布视频
 func (*VideoDao) PublishVideo(video *Video) error {
 	video.CreateDate = time.Now()
 	video.Status = true
 	if err := db.Create(&video); err != nil {
 		return err.Error
+	}
+	return nil
+}
+
+//检验是否存在视频
+func (*VideoDao) IsExistVideo(videoId int64) error {
+	result := db.First(&Video{}, "author_id = ?", videoId)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return result.Error
 	}
 	return nil
 }

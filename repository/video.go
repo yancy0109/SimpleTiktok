@@ -47,7 +47,7 @@ func (*VideoDao) PublishVideo(video *Video) error {
 
 //检验是否存在视频
 func (*VideoDao) IsExistVideo(videoId int64) error {
-	result := db.First(&Video{}, "author_id = ?", videoId)
+	result := db.First(&Video{}, "id = ?", videoId)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}

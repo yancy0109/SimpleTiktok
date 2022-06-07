@@ -4,12 +4,11 @@ go 1.18
 
 require (
 	github.com/aead/chacha20poly1305 v0.0.0-20201124145622-1a5aba2a8b29
-	github.com/google/uuid v1.3.0
-	github.com/o1egl/paseto v1.0.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.7.7
+	github.com/google/uuid v1.3.0
+	github.com/o1egl/paseto v1.0.0
 	github.com/subosito/gotenv v1.4.0
-
 	gorm.io/driver/mysql v1.3.4
 	gorm.io/gorm v1.23.5
 )

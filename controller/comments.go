@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/yancy0109/SimpleTiktok/middleware"
 	"github.com/yancy0109/SimpleTiktok/repository"
 	"github.com/yancy0109/SimpleTiktok/service"
 	"net/http"
@@ -30,18 +29,18 @@ type Comment struct {
 //}
 
 func CommentAction(context *gin.Context) {
-	token := context.Query("token")
-	//检查token
-	userid, err := middleware.ParseToken(token)
-	if err != nil {
-		context.JSON(http.StatusOK, Response{
-			StatusCode: 1,
-			StatusMsg:  "token无效",
-		})
-		return
-	}
-	//var userid int64
-	//userid = 1001
+	//token := context.Query("token")
+	////检查token
+	//userid, err := middleware.ParseToken(token)
+	//if err != nil {
+	//	context.JSON(http.StatusOK, Response{
+	//		StatusCode: 1,
+	//		StatusMsg:  "token无效",
+	//	})
+	//	return
+	//}
+	var userid int64
+	userid = 1001
 	videoid := context.Query("video_id")
 	actionType := context.Query("action_type")
 	comment_text := context.Query("comment_text")

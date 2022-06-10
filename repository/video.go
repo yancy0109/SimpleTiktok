@@ -53,3 +53,37 @@ func (*VideoDao) IsExistVideo(videoId int64) error {
 	}
 	return nil
 }
+
+//查询user1的信息  并返回是否关注user2
+func (*VideoDao) AuthorInformation(userId1 int64, userId2 int64) (*Author, error) {
+	var author *Author
+	author = new(Author)
+	author.Id = userId1
+	//根据userId1查询作者的名称信息
+	result := db.Table("user").Select("user_name").Where("id = ?", userId1).Limit(1).Find(&author.UserName)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			author.UserName = "用户已注销"
+			author.FollowCount = 0
+			author.FollowerCount = 0
+			author.IsFollow = false
+			return author, nil
+		}
+		return nil, result.Error
+	}
+	//根据userId1和userId2查询是否关注了
+	resultIsFollow := db.Table("follow").Select("is_del <> 1").Where("follow = ? and be_follow = ?", userId1, userId2).Limit(1).Find(&author.IsFollow)
+	if resultIsFollow.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			author.IsFollow = false
+		} else {
+			return author, resultIsFollow.Error
+		}
+	}
+	//查询userId1的粉丝数
+	db.Table("follow").Select("count(*)").Where("is_del <> 1 and be_follow = ?", userId1).Limit(1).Find(&author.FollowerCount)
+	//查询userId1的关注数量
+	db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", userId1).Limit(1).Find(&author.FollowCount)
+	//返回
+	return author, nil
+}

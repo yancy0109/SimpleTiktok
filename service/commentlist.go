@@ -49,7 +49,7 @@ func (f *GetCommentListFlow) GetList() error {
 		var user *repository.Author
 		var commentInfo CommentInfo
 		var err error
-		if user, err = repository.NewVideoListInstance().AuthorInformation(comment.AuthorId, f.UserId); err != nil {
+		if user, err = repository.NewVideoDaoInstance().AuthorInformation(comment.AuthorId, f.UserId); err != nil {
 			return err
 		}
 		commentInfo.User = *user

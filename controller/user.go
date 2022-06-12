@@ -3,6 +3,7 @@ package controller
 import (
 	"crypto/sha256"
 	"fmt"
+	"github.com/yancy0109/SimpleTiktok/service"
 	"net/http"
 	"strconv"
 	"time"
@@ -19,18 +20,10 @@ type UserLoginResponse struct {
 	Token       string `json:"token"`
 }
 
-type User_rep struct {
-	Id             int64  `json:"id"`
-	Name           string `json:"name"`
-	Follow_count   int64  `json:"follow_count"`
-	Follower_count int64  `json:"follower_count"`
-	Is_follow      bool   `json:"is_follow"`
-}
-
 type UserInfoResponse struct {
-	Status_code int      `json:"status_code"`
-	Status_msg  string   `json:"status_msg"`
-	User        User_rep `json:"user"`
+	StatusCode int               `json:"status_code"`
+	StatusMsg  string            `json:"status_msg"`
+	User       repository.Author `json:"user"`
 }
 
 func salt_gen(username string) int64 {
@@ -153,16 +146,52 @@ func Login(context *gin.Context) {
 }
 
 func UserInfo(context *gin.Context) {
-	user := User_rep{
-		Id:             0,
-		Name:           "Sheep Sherry",
-		Follow_count:   0,
-		Follower_count: 0,
-		Is_follow:      false,
+	var token string
+	var userId int64
+	var exist bool
+	var err error
+	if token, exist = context.GetQuery("token"); !exist {
+		context.JSON(http.StatusOK, UserInfoResponse{
+			StatusCode: -1,
+			StatusMsg:  "缺少token",
+		})
+		return
+	}
+	if userId, err = middleware.ParseToken(token); err != nil {
+		context.JSON(http.StatusOK, UserInfoResponse{
+			StatusCode: -1,
+			StatusMsg:  "token无效",
+		})
+		return
+	}
+	var user_id int64
+	if user_id, err = strconv.ParseInt(context.Query("user_id"), 10, 64); err != nil {
+		context.JSON(http.StatusOK, UserInfoResponse{
+			StatusCode: -1,
+			StatusMsg:  "user_id解析错误",
+		})
+		return
+	}
+
+	if userId != user_id {
+		context.JSON(http.StatusOK, UserInfoResponse{
+			StatusCode: -1,
+			StatusMsg:  "token信息与user_id不符",
+		})
+		return
+	}
+	var usereInfo repository.Author
+	if usereInfo, err = service.GetUserInfo(userId); err != nil {
+		context.JSON(http.StatusOK, UserInfoResponse{
+			StatusCode: -1,
+			StatusMsg:  "获取用户信息失败",
+		})
+		return
 	}
 	context.JSON(http.StatusOK, UserInfoResponse{
-		Status_code: 0,
-		Status_msg:  "OK",
-		User:        user,
+		StatusCode: 0,
+		StatusMsg:  "成功获取",
+		User:       usereInfo,
 	})
+	return
 }

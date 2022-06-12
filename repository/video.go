@@ -55,7 +55,7 @@ func (*VideoDao) IsExistVideo(videoId int64) error {
 	return nil
 }
 
-//查询user1的信息  并返回是否关注user2
+//查询user1的信息  并返回  user2是否关注user1
 func (*VideoDao) AuthorInformation(userId1 int64, userId2 int64) (*Author, error) {
 	var author *Author
 	author = new(Author)
@@ -73,7 +73,7 @@ func (*VideoDao) AuthorInformation(userId1 int64, userId2 int64) (*Author, error
 		return nil, result.Error
 	}
 	//根据userId1和userId2查询是否关注了
-	resultIsFollow := db.Table("follow").Select("is_del <> 1").Where("follow = ? and be_follow = ?", userId1, userId2).Limit(1).Find(&author.IsFollow)
+	resultIsFollow := db.Table("follow").Select("is_del <> 1").Where("follow = ? and be_follow = ?", userId2, userId1).Limit(1).Find(&author.IsFollow)
 	if resultIsFollow.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			author.IsFollow = false

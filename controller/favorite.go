@@ -35,16 +35,25 @@ func FavoriteAction(context *gin.Context) {
 	}
 }
 func FavoriteList(context *gin.Context) {
-	token := context.Query("token")
+	var token string
+	var userId int64
+	var exist bool
+	var err error
 	//检查token
-	userid, err := middleware.ParseToken(token)
-	if err != nil {
-		context.JSON(http.StatusOK, Response{
-			StatusCode: 1,
+	if token, exist = context.GetQuery("token"); !exist {
+		context.JSON(http.StatusOK, FollowListResponse{
+			StatusCode: -1,
+			StatusMsg:  "缺少token",
+		})
+		return
+	}
+	if userId, err = middleware.ParseToken(token); err != nil {
+		context.JSON(http.StatusOK, FollowListResponse{
+			StatusCode: -1,
 			StatusMsg:  "token无效",
 		})
 		return
 	}
-	favoriteList := favoriteService.FavoriteList(userid)
+	favoriteList := favoriteService.FavoriteList(userId)
 	context.JSON(http.StatusOK, favoriteList)
 }

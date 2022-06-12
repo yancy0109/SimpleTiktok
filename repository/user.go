@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -24,11 +23,8 @@ func CreateUser(username string, password string, salt string) (int64, error) {
 	result := db.Create(&user0)
 
 	if result.Error != nil {
-		fmt.Printf("failed to insert new user, err: %e\n", result.Error)
 		return 0, result.Error
 	}
-	// userid deprecated, primary key used instead
-	// return int(time.Now().UnixNano()), result.Error
 	return user0.ID, nil
 }
 
@@ -37,7 +33,6 @@ func FindUser(username string) (User, error) {
 	result := db.Where("user_name = ?", username).First(&user0)
 	err := result.Error
 	if err != nil {
-		fmt.Printf("failed to find user, err: %e\n", err)
 		return User{}, err
 	}
 	return user0, err
@@ -45,11 +40,9 @@ func FindUser(username string) (User, error) {
 
 func FindUserById(id int64) (User, error) {
 	user := User{ID: id}
-	result := db.Where("id = ?", id).First(&user)
-	err := result.Error
-	if err != nil {
-		fmt.Printf("failed to find user, err: %e\n", err)
-		return User{}, err
+	result := db.Model(user).First(&user)
+	if result.Error != nil {
+		return User{}, result.Error
 	}
-	return user, err
+	return user, nil
 }

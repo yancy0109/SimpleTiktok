@@ -13,12 +13,13 @@ import (
 type FollowListResponse struct {
 	StatusCode int64               `json:"status_code"`
 	StatusMsg  string              `json:"status_msg"`
-	FollowList []repository.Author `json:"user_list"`
+	UserList   []repository.Author `json:"user_list"`
 }
 
 func FollowerList(context *gin.Context) {
 	var token string
 	var userId int64
+	var tokenUserId int64
 	var exist bool
 	var err error
 	if token, exist = context.GetQuery("token"); !exist {
@@ -28,15 +29,22 @@ func FollowerList(context *gin.Context) {
 		})
 		return
 	}
-	if userId, err = middleware.ParseToken(token); err != nil {
+	if tokenUserId, err = middleware.ParseToken(token); err != nil {
 		context.JSON(http.StatusOK, FollowListResponse{
 			StatusCode: -1,
 			StatusMsg:  "token无效",
 		})
 		return
 	}
+	if userId, err = strconv.ParseInt(context.Query("user_id"), 10, 64); err != nil {
+		context.JSON(http.StatusOK, FollowListResponse{
+			StatusCode: -1,
+			StatusMsg:  "参数错误",
+		})
+		return
+	}
 	var followList []repository.Author
-	if followList, err = service.GetFollowList(userId); err != nil {
+	if followList, err = service.GetFollowerList(tokenUserId, userId); err != nil {
 		context.JSON(http.StatusOK, FollowListResponse{
 			StatusCode: -1,
 			StatusMsg:  "获取粉丝列表失败",
@@ -46,13 +54,14 @@ func FollowerList(context *gin.Context) {
 	context.JSON(http.StatusOK, FollowListResponse{
 		StatusCode: 0,
 		StatusMsg:  "获取粉丝列表成功",
-		FollowList: followList,
+		UserList:   followList,
 	})
 }
 
 func BeFollowerList(context *gin.Context) {
 	var token string
 	var userId int64
+	var tokenUserId int64
 	var exist bool
 	var err error
 	if token, exist = context.GetQuery("token"); !exist {
@@ -62,15 +71,22 @@ func BeFollowerList(context *gin.Context) {
 		})
 		return
 	}
-	if userId, err = middleware.ParseToken(token); err != nil {
+	if tokenUserId, err = middleware.ParseToken(token); err != nil {
 		context.JSON(http.StatusOK, FollowListResponse{
 			StatusCode: -1,
 			StatusMsg:  "token无效",
 		})
 		return
 	}
-	var followList []repository.Author
-	if followList, err = service.GetBeFollow(userId); err != nil {
+	if userId, err = strconv.ParseInt(context.Query("user_id"), 10, 64); err != nil {
+		context.JSON(http.StatusOK, FollowListResponse{
+			StatusCode: -1,
+			StatusMsg:  "参数错误",
+		})
+		return
+	}
+	var BefollowList []repository.Author
+	if BefollowList, err = service.GetBeFollowerListFlow(tokenUserId, userId); err != nil {
 		context.JSON(http.StatusOK, FollowListResponse{
 			StatusCode: -1,
 			StatusMsg:  "获取关注列表失败",
@@ -80,7 +96,7 @@ func BeFollowerList(context *gin.Context) {
 	context.JSON(http.StatusOK, FollowListResponse{
 		StatusCode: 0,
 		StatusMsg:  "获取关注列表成功",
-		FollowList: followList,
+		UserList:   BefollowList,
 	})
 }
 

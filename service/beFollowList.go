@@ -2,30 +2,30 @@ package service
 
 import "github.com/yancy0109/SimpleTiktok/repository"
 
-func GetBeFollow(userId int64) ([]repository.Author, error) {
-	return NewGetFollowList(userId).Get()
+func GetBeFollowerListFlow(tokenUserId int64, userId int64) ([]repository.Author, error) {
+	return NewGetFollowerList(tokenUserId, userId).Get()
 }
 
-func (f *GetFollowListFlow) Get() ([]repository.Author, error) {
+func (f *GetFollowerListFlow) Get() ([]repository.Author, error) {
 	if err := f.CheckUserId(); err != nil {
 		return []repository.Author{}, err
 	}
 	if err := f.GetBeFollowList(); err != nil {
 		return []repository.Author{}, err
 	}
-	return f.FollowList, nil
+	return f.FollowerList, nil
 }
 
 //先获取Id的关注列表，再根据列表返回关注信息
-func (f *GetFollowListFlow) GetBeFollowList() error {
+func (f *GetFollowerListFlow) GetBeFollowList() error {
 	followIdList := repository.NewFollowListDaoInstance().GetBeFollowIdList(f.UserId)
 	for _, followId := range followIdList {
 		var user *repository.Author
 		var err error
-		if user, err = repository.NewVideoDaoInstance().AuthorInformation(followId, f.UserId); err != nil {
+		if user, err = repository.NewVideoDaoInstance().AuthorInformation(followId, f.TokenUserId); err != nil {
 			return err
 		}
-		f.FollowList = append(f.FollowList, *user)
+		f.FollowerList = append(f.FollowerList, *user)
 	}
 	return nil
 }

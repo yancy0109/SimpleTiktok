@@ -88,3 +88,29 @@ func (*VideoDao) AuthorInformation(userId1 int64, userId2 int64) (*Author, error
 	//返回
 	return author, nil
 }
+
+//查询user信息
+func (*VideoDao) GetUserInformation(userId int64) (*Author, error) {
+	var author *Author
+	author = new(Author)
+	author.Id = userId
+	//根据userId1查询作者的名称信息
+	result := db.Table("user").Select("user_name").Where("id = ?", userId).Limit(1).Find(&author.UserName)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			author.UserName = "用户已注销"
+			author.FollowCount = 0
+			author.FollowerCount = 0
+			author.IsFollow = false
+			return author, nil
+		}
+		return nil, result.Error
+	}
+	author.IsFollow = false
+	//查询userId的粉丝数
+	db.Table("follow").Select("count(*)").Where("is_del <> 1 and be_follow = ?", userId).Limit(1).Find(&author.FollowerCount)
+	//查询userId1的关注数量
+	db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", userId).Limit(1).Find(&author.FollowCount)
+	//返回
+	return author, nil
+}

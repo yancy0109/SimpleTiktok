@@ -35,11 +35,11 @@ func NewVideoListInstance() *VideoListDao {
 func (*VideoListDao) VideoList(latestTime int64) ([]Video, error) {
 
 	listSize := 10
-	//latestTime *= 1000
+	// latestTime *= 1000
 	//根据latestTime查询符合条件的视频及其信息
 	var videoList []Video
 	//这里要将数据库里面的时间格式转化为时间戳格式再进行比较
-	result := db.Table("video").Where("UNIX_TIMESTAMP(create_date) < ? and status <> 0", latestTime*1000).Order("create_date desc").Limit(listSize).Find(&videoList)
+	result := db.Table("video").Where("UNIX_TIMESTAMP(create_date) < ? and status <> 0", latestTime).Order("create_date desc").Limit(listSize).Find(&videoList)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -61,7 +61,7 @@ func (*VideoListDao) AuthorInformation(AuthorId int64, userId int64) (*Author, e
 	author = new(Author)
 	author.Id = AuthorId
 	//根据authorId查询作者的名称信息
-	result := db.Table("user").Select("user_name").Where("id = ?", userId).Limit(1).Find(&author.UserName)
+	result := db.Table("user").Select("user_name").Where("id = ?", AuthorId).Limit(1).Find(&author.UserName)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			author.UserName = "用户已注销"
@@ -82,12 +82,12 @@ func (*VideoListDao) AuthorInformation(AuthorId int64, userId int64) (*Author, e
 		}
 	}
 	//查询author的粉丝数
-	resultFollowerCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and be_follow = ?", AuthorId).Limit(1).Find(&author.FollowerCount)
+	resultFollowerCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", AuthorId).Limit(1).Find(&author.FollowerCount)
 	if resultFollowerCount.Error != nil {
 		return author, resultFollowerCount.Error
 	}
 	//查询author的关注数量
-	resultFollowCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", AuthorId).Limit(1).Find(&author.FollowCount)
+	resultFollowCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and be_follow = ?", AuthorId).Limit(1).Find(&author.FollowCount)
 	if resultFollowCount.Error != nil {
 		return author, resultFollowCount.Error
 	}

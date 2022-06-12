@@ -2,9 +2,10 @@ package repository
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"sync"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Video struct {
@@ -62,7 +63,7 @@ func (*VideoDao) AuthorInformation(userId1 int64, userId2 int64) (*Author, error
 	//根据userId1查询作者的名称信息
 	result := db.Table("user").Select("user_name").Where("id = ?", userId1).Limit(1).Find(&author.UserName)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			author.UserName = "用户已注销"
 			author.FollowCount = 0
 			author.FollowerCount = 0
@@ -74,7 +75,7 @@ func (*VideoDao) AuthorInformation(userId1 int64, userId2 int64) (*Author, error
 	//根据userId1和userId2查询是否关注了
 	resultIsFollow := db.Table("follow").Select("is_del <> 1").Where("follow = ? and be_follow = ?", userId1, userId2).Limit(1).Find(&author.IsFollow)
 	if resultIsFollow.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			author.IsFollow = false
 		} else {
 			return author, resultIsFollow.Error

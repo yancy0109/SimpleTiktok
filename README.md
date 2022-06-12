@@ -1,6 +1,7 @@
 # SimpleTiktok
 越想越不队  |  抖音项目  |  第三届字节跳动青训营
 
+=======
 mysql脚本文件douyin.sql用于本地数据库测试
 
 
@@ -32,3 +33,6 @@ mysql -u___ -p____
 #### 修改root账户密码为root
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
 flush privileges;
+=======
+>>>>>>> 780c8cdfb60439bd17083804e31268f906294740
+>>>>>>> mytiktok1

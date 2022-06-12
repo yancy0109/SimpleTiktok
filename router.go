@@ -8,7 +8,7 @@ import (
 func InitRouter(r *gin.Engine) {
 	//设置静态目录为public文件夹
 	r.Static("/static", "./public")
-
+	r.Static("/favicon.ico", "/public/tinicon.ico.png")
 	apiRouter := r.Group("/douyin")
 
 	//// basic apis
@@ -28,7 +28,7 @@ func InitRouter(r *gin.Engine) {
 	//
 	//// extra apis - II
 	apiRouter.POST("/relation/action/", controller.RelationAction)
-	//apiRouter.GET("/relation/follow/list/", controller.FollowList)
-	//apiRouter.GET("/relation/follower/list/", controller.FollowerList)
+	apiRouter.GET("/relation/follow/list/", controller.FollowerList)
+	apiRouter.GET("/relation/follower/list/", controller.BeFollowerList)
 	apiRouter.GET("/")
 }

@@ -3,6 +3,7 @@ package controller
 import (
 	"crypto/sha256"
 	"fmt"
+	"github.com/yancy0109/SimpleTiktok/service"
 	"net/http"
 	"strconv"
 	"time"
@@ -28,9 +29,9 @@ type User_rep struct {
 }
 
 type UserInfoResponse struct {
-	Status_code int      `json:"status_code"`
-	Status_msg  string   `json:"status_msg"`
-	User        User_rep `json:"user"`
+	Status_code int          `json:"status_code"`
+	Status_msg  string       `json:"status_msg"`
+	User        service.User `json:"user"`
 }
 
 func salt_gen(username string) int64 {
@@ -153,13 +154,28 @@ func Login(context *gin.Context) {
 }
 
 func UserInfo(context *gin.Context) {
-	user := User_rep{
-		Id:             0,
-		Name:           "Sheep Sherry",
-		Follow_count:   0,
-		Follower_count: 0,
-		Is_follow:      false,
+	var userService service.UserService
+	token := context.Query("token")
+	userIdStr := context.Query("user_id")
+	userId, err := strconv.ParseInt(userIdStr, 10, 64)
+	tokenUserId, err := middleware.ParseToken(token)
+	if err != nil {
+		msg := "token无效"
+		context.JSON(http.StatusOK, UserInfoResponse{
+			Status_code: 0,
+			Status_msg:  msg,
+			User: service.User{
+				FollowCount:   0,
+				FollowerCount: 0,
+				ID:            -1,
+				IsFollow:      false,
+				Name:          "sheep",
+			},
+		})
+		return
 	}
+
+	user, err := userService.QueryUserInfo(userId, tokenUserId)
 	context.JSON(http.StatusOK, UserInfoResponse{
 		Status_code: 0,
 		Status_msg:  "OK",

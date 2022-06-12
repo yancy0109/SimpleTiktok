@@ -32,7 +32,7 @@ func (FavoriteRecord) TableName() string {
 
 func (*FavoriteDao) GetList(UserId int64) ([]Video, error) {
 	var results []Video
-	result := db.Table("video v").Select("v.id , v.author_id ,v.title ,v.play_url ,v.cover_url , v.create_date").Joins("left join video_favorite f on f.user_id = ? AND f.Status <> 0 where v.id = f.video_id AND v.status <> 0", UserId).Scan(&results)
+	result := db.Table("video v").Select("v.id , v.author_id ,v.title ,v.play_url ,v.cover_url , v.create_date").Joins("left join video_favorite f on f.user_id = ? AND f.Status <> 0 where v.id = f.video_id AND v.status = 1", UserId).Scan(&results)
 	if result.Error != nil {
 		return nil, result.Error
 	}

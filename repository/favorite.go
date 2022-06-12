@@ -80,7 +80,7 @@ func (*FavoriteDao) UpdateStatus(favoriteRecord FavoriteRecord) error {
 	return nil
 }
 func (*FavoriteDao) ChangeStatus(favoriteRecord FavoriteRecord) error {
-	if err := db.Model(&favoriteRecord).Where("user_id = ? AND video_id = ?", favoriteRecord.Userid, favoriteRecord.Videoid).Update("Status", favoriteRecord.Status); err != nil {
+	if err := db.Model(&favoriteRecord).Where("user_id = ? AND video_id = ?", favoriteRecord.Userid, favoriteRecord.Videoid).Update("Status", 0); err != nil {
 		return err.Error
 	}
 	return nil

@@ -36,11 +36,11 @@ func salt_gen(username string) int64 {
 }
 
 func pwHash(rawPw string) string {
-	pwarr := sha256.Sum256([]byte(rawPw))
+	pwArr := sha256.Sum256([]byte(rawPw))
 
 	var hashedPw string
-	for _, pwele := range pwarr {
-		hashedPw += fmt.Sprintf("%x", pwele)
+	for _, pwEle := range pwArr {
+		hashedPw += fmt.Sprintf("%x", pwEle)
 	}
 	return hashedPw
 }
@@ -55,10 +55,9 @@ func Register(context *gin.Context) {
 	_, err := repository.FindUser(username)
 
 	if err == nil {
-		fmt.Printf("user already exists\n")
 		context.JSON(http.StatusOK, UserLoginResponse{
-			Status_code: 4,
-			Status_msg:  "Register failed: user already exists",
+			Status_code: -1,
+			Status_msg:  "用户名已经存在",
 			User_id:     0,
 			Token:       "",
 		})
@@ -67,10 +66,9 @@ func Register(context *gin.Context) {
 
 	user_id, err := repository.CreateUser(username, password, salt)
 	if err != nil {
-		fmt.Printf("failed to register, err: %e\n", err)
 		context.JSON(http.StatusOK, UserLoginResponse{
-			Status_code: 1,
-			Status_msg:  "Register failed: repository issue",
+			Status_code: -1,
+			Status_msg:  "创建用户失败",
 			User_id:     0,
 			Token:       "",
 		})
@@ -78,19 +76,17 @@ func Register(context *gin.Context) {
 	}
 	token, err := middleware.GenToken(user_id)
 	if err != nil {
-		fmt.Printf("failed to create Token, err: %e\n", err)
 		context.JSON(http.StatusOK, UserLoginResponse{
-			Status_code: 2,
-			Status_msg:  "Register failed: Token gen issue",
+			Status_code: -1,
+			Status_msg:  "token生成失败",
 			User_id:     0,
 			Token:       "",
 		})
 		return
 	}
-	fmt.Printf("success, User_id: %v, Token: %v\n", user_id, token)
 	context.JSON(http.StatusOK, UserLoginResponse{
 		Status_code: 0,
-		Status_msg:  "Register success",
+		Status_msg:  "注册成功",
 		User_id:     user_id,
 		Token:       token,
 	})
@@ -103,10 +99,9 @@ func Login(context *gin.Context) {
 	user, err := repository.FindUser(username)
 
 	if err != nil {
-		fmt.Printf("failed to find user\n")
 		context.JSON(http.StatusOK, UserLoginResponse{
-			Status_code: 1,
-			Status_msg:  "Login failed: cannot find user",
+			Status_code: -1,
+			Status_msg:  "用户名无效",
 			User_id:     0,
 			Token:       "",
 		})
@@ -115,10 +110,9 @@ func Login(context *gin.Context) {
 	underVerify := pwHash(password + user.Salt)[0:50]
 
 	if underVerify != user.Password {
-		fmt.Printf("password not matched\n")
 		context.JSON(http.StatusOK, UserLoginResponse{
-			Status_code: 4,
-			Status_msg:  "Login failed: password not matched",
+			Status_code: -1,
+			Status_msg:  "密码错误",
 			User_id:     0,
 			Token:       "",
 		})
@@ -126,20 +120,17 @@ func Login(context *gin.Context) {
 	}
 	token, err := middleware.GenToken(user.ID)
 	if err != nil {
-		fmt.Printf("failed to create Token\n")
 		context.JSON(http.StatusOK, UserLoginResponse{
-			Status_code: 2,
-			Status_msg:  "Login failed: Token gen issue",
+			Status_code: -1,
+			Status_msg:  "token生成失败",
 			User_id:     0,
 			Token:       "",
 		})
 		return
 	}
-
-	fmt.Printf("success, User_id: %v, Token: %v\n", user.ID, token)
 	context.JSON(http.StatusOK, UserLoginResponse{
 		Status_code: 0,
-		Status_msg:  "Login success",
+		Status_msg:  "登录成功",
 		User_id:     user.ID,
 		Token:       token,
 	})

@@ -2,38 +2,41 @@ package service
 
 import "github.com/yancy0109/SimpleTiktok/repository"
 
-type GetFollowListFlow struct {
-	UserId     int64               `json:"user_id"`
-	FollowList []repository.Author `json:"user_list"`
+type GetFollowerListFlow struct {
+	UserId       int64               `json:"user_id"`
+	FollowerList []repository.Author `json:"user_list"`
 }
 
-func GetFollowList(userId int64) ([]repository.Author, error) {
-	return NewGetFollowList(userId).Do()
+func GetFollowerList(userId int64) ([]repository.Author, error) {
+	return NewGetFollowerList(userId).Do()
 }
 
-func NewGetFollowList(userId int64) *GetFollowListFlow {
-	return &GetFollowListFlow{
+func NewGetFollowerList(userId int64) *GetFollowerListFlow {
+	return &GetFollowerListFlow{
 		UserId: userId,
 	}
 }
 
-func (f *GetFollowListFlow) Do() ([]repository.Author, error) {
+func (f *GetFollowerListFlow) Do() ([]repository.Author, error) {
 	if err := f.CheckUserId(); err != nil {
 		return []repository.Author{}, err
 	}
 	if err := f.GetList(); err != nil {
 		return []repository.Author{}, err
 	}
-	return f.FollowList, nil
+	return f.FollowerList, nil
 }
 
 //检查用户Id是否存在
-func (f *GetFollowListFlow) CheckUserId() error {
+func (f *GetFollowerListFlow) CheckUserId() error {
+	if _, err := repository.FindUserById(f.UserId); err != nil {
+		return err
+	}
 	return nil
 }
 
 //先获取Id的粉丝列表，再根据列表返回粉丝信息
-func (f *GetFollowListFlow) GetList() error {
+func (f *GetFollowerListFlow) GetList() error {
 	followIdList := repository.NewFollowListDaoInstance().GetFollowIdList(f.UserId)
 	for _, followId := range followIdList {
 		var user *repository.Author
@@ -41,7 +44,7 @@ func (f *GetFollowListFlow) GetList() error {
 		if user, err = repository.NewVideoDaoInstance().AuthorInformation(followId, f.UserId); err != nil {
 			return err
 		}
-		f.FollowList = append(f.FollowList, *user)
+		f.FollowerList = append(f.FollowerList, *user)
 	}
 	return nil
 }

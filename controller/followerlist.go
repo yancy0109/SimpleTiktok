@@ -34,7 +34,7 @@ func FollowerList(context *gin.Context) {
 		return
 	}
 	var followList []repository.Author
-	if followList, err = service.GetFollowList(userId); err != nil {
+	if followList, err = service.GetFollowerList(userId); err != nil {
 		context.JSON(http.StatusOK, FollowListResponse{
 			StatusCode: -1,
 			StatusMsg:  "获取粉丝列表失败",

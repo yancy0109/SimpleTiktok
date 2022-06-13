@@ -82,12 +82,12 @@ func (*VideoListDao) AuthorInformation(AuthorId int64, userId int64) (*Author, e
 		}
 	}
 	//查询author的粉丝数
-	resultFollowerCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", AuthorId).Limit(1).Find(&author.FollowerCount)
+	resultFollowerCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and be_follow = ?", AuthorId).Limit(1).Find(&author.FollowerCount)
 	if resultFollowerCount.Error != nil {
 		return author, resultFollowerCount.Error
 	}
 	//查询author的关注数量
-	resultFollowCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and be_follow = ?", AuthorId).Limit(1).Find(&author.FollowCount)
+	resultFollowCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", AuthorId).Limit(1).Find(&author.FollowCount)
 	if resultFollowCount.Error != nil {
 		return author, resultFollowCount.Error
 	}

@@ -16,7 +16,7 @@ type FollowListResponse struct {
 	UserList   []repository.Author `json:"user_list"`
 }
 
-func FollowerList(context *gin.Context) {
+func BeFollowerList(context *gin.Context) {
 	var token string
 	var userId int64
 	var tokenUserId int64

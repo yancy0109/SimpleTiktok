@@ -15,11 +15,7 @@
 */
 drop database IF EXISTS `douyin`;
 create database `douyin` character set utf8 collate utf8_bin;
-<<<<<<< HEAD
-use `douyin`
-=======
 use `douyin`;
->>>>>>> 780c8cdfb60439bd17083804e31268f906294740
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -48,14 +44,14 @@ create index `video_id_index` on `comment` (`video_id`);
 DROP TABLE IF EXISTS `follow`;
 CREATE TABLE `follow`  (
   `id` int(0) NOT NULL AUTO_INCREMENT,
-  `be_follow` int(0) NOT NULL,
   `follow` int(0) NOT NULL,
+  `follower` int(0) NOT NULL,
   `is_del` int(0) NOT NULL,
   `update_time` datetime(0) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
-create index 	`be_follow_index` on `follow` (`be_follow`);
-create index `follow_index` on `follow` (`follow`);
+create index 	`follow_index` on `follow` (`follow`);
+create index `follower_index` on `follow` (`follower`);
 
 
 -- ----------------------------
@@ -80,10 +76,7 @@ DROP TABLE IF EXISTS `video`;
 CREATE TABLE `video`  (
   `id` int(0) NOT NULL AUTO_INCREMENT,
   `author_id` int(0) NOT NULL,
-<<<<<<< HEAD
-=======
 	`title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
->>>>>>> 780c8cdfb60439bd17083804e31268f906294740
   `play_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `cover_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `create_date` datetime(0) NOT NULL,

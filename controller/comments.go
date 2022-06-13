@@ -56,13 +56,13 @@ func CommentAction(context *gin.Context) {
 		} else {
 			context.JSON(http.StatusOK, CommentResponse{
 				StatusCode: 0,
-				StatusMsg:  "successfully",
+				StatusMsg:  "成功",
 				Comment: Comment{
 					ID: comment_Id,
 					User: repository.Author{
 						Id:            userid,
 						UserName:      users.UserName,
-						FollowCount:   users.FollowerCount,
+						FollowCount:   users.FollowCount,
 						FollowerCount: users.FollowerCount,
 						IsFollow:      users.IsFollow,
 					},
@@ -80,7 +80,7 @@ func CommentAction(context *gin.Context) {
 		} else {
 			context.JSON(http.StatusOK, Response{
 				StatusCode: 0,
-				StatusMsg:  "successfully",
+				StatusMsg:  "成功",
 			})
 		}
 	}

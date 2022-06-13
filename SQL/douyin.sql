@@ -44,14 +44,14 @@ create index `video_id_index` on `comment` (`video_id`);
 DROP TABLE IF EXISTS `follow`;
 CREATE TABLE `follow`  (
   `id` int(0) NOT NULL AUTO_INCREMENT,
-  `be_follow` int(0) NOT NULL,
   `follow` int(0) NOT NULL,
+  `follower` int(0) NOT NULL,
   `is_del` int(0) NOT NULL,
   `update_time` datetime(0) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
-create index 	`be_follow_index` on `follow` (`be_follow`);
-create index `follow_index` on `follow` (`follow`);
+create index 	`follow_index` on `follow` (`follow`);
+create index `follower_index` on `follow` (`follower`);
 
 
 -- ----------------------------

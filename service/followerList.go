@@ -41,11 +41,11 @@ func (f *GetFollowerListFlow) CheckUserId() error {
 
 //先获取Id的粉丝列表，再根据列表返回粉丝信息
 func (f *GetFollowerListFlow) GetList() error {
-	followIdList := repository.NewFollowListDaoInstance().GetFollowIdList(f.UserId)
-	for _, followId := range followIdList {
+	followerIdList := repository.NewFollowListDaoInstance().GetFollowerIdList(f.UserId)
+	for _, followerId := range followerIdList {
 		var user *repository.Author
 		var err error
-		if user, err = repository.NewVideoDaoInstance().AuthorInformation(followId, f.TokenUserId); err != nil {
+		if user, err = repository.NewVideoDaoInstance().AuthorInformation(followerId, f.TokenUserId, 0); err != nil {
 			return err
 		}
 		f.FollowerList = append(f.FollowerList, *user)

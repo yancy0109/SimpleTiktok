@@ -12,17 +12,16 @@ type VideoListService struct {
 
 var videoListDao = repository.NewVideoListInstance()
 
-func (*VideoListService) GetVideoList(tokenId int64, userId int64) *VideoListModal {
+func (*VideoListService) GetVideoList(userId int64) *VideoListModal {
 	var videoListModal VideoListModal
 	//查询他名下的所有视频列表
 	videos, _ := videoListDao.VideoListForUserId(userId)
 	//查询这些视频的信息
-	//关系信息应当是与登录的账号的而不是和查询的账号的
-	videoList, code := GetVideoInformation(videos, tokenId)
+	videoList, code := GetVideoInformation(videos, userId)
 	videoListModal.StatusCode = code
 	videoListModal.VideoList = videoList
 	var msg string
-	if tokenId == -1 {
+	if userId == -1 {
 		msg = "用户未登录"
 	} else {
 		msg = "正常"

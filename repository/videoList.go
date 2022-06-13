@@ -39,7 +39,7 @@ func (*VideoListDao) VideoList(latestTime int64) ([]Video, error) {
 	//根据latestTime查询符合条件的视频及其信息
 	var videoList []Video
 	//这里要将数据库里面的时间格式转化为时间戳格式再进行比较
-	result := db.Table("video").Where("UNIX_TIMESTAMP(create_date) < ? and status <> 0", latestTime+28800).Order("create_date desc").Limit(listSize).Find(&videoList)
+	result := db.Table("video").Where("UNIX_TIMESTAMP(create_date) < ? and status <> 0", latestTime).Order("create_date desc").Limit(listSize).Find(&videoList)
 	if result.Error != nil {
 		return nil, result.Error
 	}

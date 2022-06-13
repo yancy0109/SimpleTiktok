@@ -43,8 +43,8 @@ func FollowerList(context *gin.Context) {
 		})
 		return
 	}
-	var followList []repository.Author
-	if followList, err = service.GetFollowerList(tokenUserId, userId); err != nil {
+	var followerList []repository.Author
+	if followerList, err = service.GetFollowerList(tokenUserId, userId); err != nil {
 		context.JSON(http.StatusOK, FollowListResponse{
 			StatusCode: -1,
 			StatusMsg:  "获取粉丝列表失败",
@@ -54,11 +54,11 @@ func FollowerList(context *gin.Context) {
 	context.JSON(http.StatusOK, FollowListResponse{
 		StatusCode: 0,
 		StatusMsg:  "获取粉丝列表成功",
-		UserList:   followList,
+		UserList:   followerList,
 	})
 }
 
-func BeFollowerList(context *gin.Context) {
+func FollowList(context *gin.Context) {
 	var token string
 	var userId int64
 	var tokenUserId int64
@@ -85,8 +85,8 @@ func BeFollowerList(context *gin.Context) {
 		})
 		return
 	}
-	var BefollowList []repository.Author
-	if BefollowList, err = service.GetBeFollowerListFlow(tokenUserId, userId); err != nil {
+	var followList []repository.Author
+	if followList, err = service.GetFollowList(tokenUserId, userId); err != nil {
 		context.JSON(http.StatusOK, FollowListResponse{
 			StatusCode: -1,
 			StatusMsg:  "获取关注列表失败",
@@ -96,7 +96,7 @@ func BeFollowerList(context *gin.Context) {
 	context.JSON(http.StatusOK, FollowListResponse{
 		StatusCode: 0,
 		StatusMsg:  "获取关注列表成功",
-		UserList:   BefollowList,
+		UserList:   followList,
 	})
 }
 
@@ -116,13 +116,13 @@ func RelationAction(context *gin.Context) {
 		})
 		return
 	}
-	beFollow := context.Query("to_user_id")
-	beFollowId, errorOne := strconv.ParseInt(beFollow, 10, 64)
+	follow := context.Query("to_user_id")
+	followId, errorOne := strconv.ParseInt(follow, 10, 64)
 
 	actionType := context.Query("action_type")
 	action, errorTwo := strconv.Atoi(actionType)
 
-	if beFollowId == userId {
+	if followId == userId {
 		context.JSON(http.StatusOK, RelationActionResponse{
 			StatusCode: 1,
 			StatusMsg:  "无法关注自己",
@@ -138,7 +138,7 @@ func RelationAction(context *gin.Context) {
 	}
 
 	var followActionService service.FollowActionService
-	msg, error, code := followActionService.UpdateFollowStatus(userId, beFollowId, action)
+	msg, error, code := followActionService.UpdateFollowStatus(userId, followId, action)
 	if error != nil {
 		context.JSON(http.StatusOK, RelationActionResponse{
 			StatusCode: 1,

@@ -73,13 +73,15 @@ func (*VideoListDao) AuthorInformation(AuthorId int64, userId int64) (*Author, e
 		return nil, result.Error
 	}
 	//根据userId和authorId查询是否关注了
-	resultIsFollow := db.Table("follow").Select("is_del <> 1").Where("follow = ? and be_follow = ?", userId, AuthorId).Limit(1).Find(&author.IsFollow)
-	if resultIsFollow.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			author.IsFollow = false
-		} else {
-			return author, resultIsFollow.Error
-		}
+	isFollow, err := followActionDao.GetFollowState(userId, AuthorId)
+	isFollowNotFound := errors.Is(err, gorm.ErrRecordNotFound)
+	if err != nil && !isFollowNotFound {
+			return author, err
+	}
+	if(isFollowNotFound || isFollow == nil) {
+		author.IsFollow = false;
+	}else{
+		author.IsFollow = isFollow.IsDel == 0;
 	}
 	//查询author的粉丝数
 	resultFollowerCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", AuthorId).Limit(1).Find(&author.FollowerCount)
@@ -87,7 +89,7 @@ func (*VideoListDao) AuthorInformation(AuthorId int64, userId int64) (*Author, e
 		return author, resultFollowerCount.Error
 	}
 	//查询author的关注数量
-	resultFollowCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and be_follow = ?", AuthorId).Limit(1).Find(&author.FollowCount)
+	resultFollowCount := db.Table("follow").Select("count(*)").Where("is_del <> 1 and follower = ?", AuthorId).Limit(1).Find(&author.FollowCount)
 	if resultFollowCount.Error != nil {
 		return author, resultFollowCount.Error
 	}

@@ -55,8 +55,8 @@ func (*VideoDao) IsExistVideo(videoId int64) error {
 	return nil
 }
 
-//查询user1的信息  并返回是否关注user2
-func (*VideoDao) AuthorInformation(userId1 int64, userId2 int64) (*Author, error) {
+//查询user1的信息 
+func (*VideoDao) AuthorInformation(userId1 int64, userId2 int64, first_follow_second int64) (*Author, error) {
 	var author *Author
 	author = new(Author)
 	author.Id = userId1
@@ -72,19 +72,32 @@ func (*VideoDao) AuthorInformation(userId1 int64, userId2 int64) (*Author, error
 		}
 		return nil, result.Error
 	}
-	//根据userId1和userId2查询是否关注了
-	resultIsFollow := db.Table("follow").Select("is_del <> 1").Where("follow = ? and be_follow = ?", userId1, userId2).Limit(1).Find(&author.IsFollow)
-	if resultIsFollow.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			author.IsFollow = false
-		} else {
-			return author, resultIsFollow.Error
-		}
+	//根据userId1和userId2查询是否关注
+	var follow int64
+	var follower int64
+	if(first_follow_second > 0) {
+		follower = userId1
+		follow = userId2
+	}else{
+		follower = userId2
+		follow = userId1
 	}
+	isFollow, err := followActionDao.GetFollowState(follower, follow)
+	isFollowNotFound := errors.Is(err, gorm.ErrRecordNotFound)
+	if err != nil && !isFollowNotFound {
+			author.IsFollow = false;
+			return author, err
+	}
+	if(isFollowNotFound || isFollow == nil) {
+		author.IsFollow = false;
+	}else{
+		author.IsFollow = isFollow.IsDel == 0;
+	}
+
 	//查询userId1的粉丝数
-	db.Table("follow").Select("count(*)").Where("is_del <> 1 and be_follow = ?", userId1).Limit(1).Find(&author.FollowerCount)
+	db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", userId1).Limit(1).Find(&author.FollowerCount)
 	//查询userId1的关注数量
-	db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", userId1).Limit(1).Find(&author.FollowCount)
+	db.Table("follow").Select("count(*)").Where("is_del <> 1 and follower = ?", userId1).Limit(1).Find(&author.FollowCount)
 	//返回
 	return author, nil
 }
@@ -108,9 +121,9 @@ func (*VideoDao) GetUserInformation(userId int64) (*Author, error) {
 	}
 	author.IsFollow = false
 	//查询userId的粉丝数
-	db.Table("follow").Select("count(*)").Where("is_del <> 1 and be_follow = ?", userId).Limit(1).Find(&author.FollowerCount)
-	//查询userId1的关注数量
-	db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", userId).Limit(1).Find(&author.FollowCount)
+	db.Table("follow").Select("count(*)").Where("is_del <> 1 and follow = ?", userId).Limit(1).Find(&author.FollowerCount)
+	//查询userId的关注数量
+	db.Table("follow").Select("count(*)").Where("is_del <> 1 and follower = ?", userId).Limit(1).Find(&author.FollowCount)
 	//返回
 	return author, nil
 }

@@ -1,8 +1,6 @@
 package repository
 
-import (
-	"sync"
-)
+import "sync"
 
 type FollowListDao struct {
 }
@@ -34,7 +32,7 @@ func (*FollowListDao) GetFollowIdList(userId int64) []int64 {
 	var followList []Follow
 	db.Select("follow").Find(&followList, "follower = ? and is_del = ?", userId, 0)
 	for _, followInfo := range followList {
-		followIdList = append(followIdList, followInfo.BeFollow)
+		followIdList = append(followIdList, followInfo.Follow)
 	}
 	return followIdList
 }

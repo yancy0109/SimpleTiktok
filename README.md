@@ -5,13 +5,14 @@
 mysql脚本文件/SQL/douyin.sql用于本地数据库测试
 
 ## 运行时环境配置
-对.env文件进行修改
-MYSQL_USER                  数据库用户名
-MYSQL_PASSWORD              数据库莫玛
-MYSQL_DBNAME                sql文件生成得数据库对应名字(默认douyin)
-MYSQL_HOST                  数据库连接地址
-MYSQL_PORT                  数据库连接地址
-RESOURCE_DIRECTORY          当前项目运行所在的ip地址（填写公网ip/局域网下ip）
+执行 go mod tidy  
+再对.env文件进行修改
+MYSQL_USER                  数据库用户名  
+MYSQL_PASSWORD              数据库莫玛  
+MYSQL_DBNAME                sql文件生成得数据库对应名字(默认douyin)  
+MYSQL_HOST                  数据库连接地址  
+MYSQL_PORT                  数据库连接地址  
+RESOURCE_DIRECTORY          当前项目运行所在的ip地址（填写公网ip/局域网下ip）  
 
 ## 视频上传功能需要安装
 使用FFMPEG处理本地视频提取首帧作为封面，通过exec.Command()调用命令，需要以下环境

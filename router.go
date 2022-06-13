@@ -28,7 +28,9 @@ func InitRouter(r *gin.Engine) {
 	//
 	//// extra apis - II
 	apiRouter.POST("/relation/action/", controller.RelationAction)
+	//关注列表
 	apiRouter.GET("/relation/follow/list/", controller.FollowerList)
+	//粉丝列表
 	apiRouter.GET("/relation/follower/list/", controller.BeFollowerList)
 	apiRouter.GET("/")
 }

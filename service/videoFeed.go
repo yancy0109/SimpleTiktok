@@ -2,10 +2,11 @@ package service
 
 import (
 	"errors"
-	"github.com/yancy0109/SimpleTiktok/repository"
-	"gorm.io/gorm"
 	"sync"
 	"time"
+
+	"github.com/yancy0109/SimpleTiktok/repository"
+	"gorm.io/gorm"
 )
 
 type VideoFeed struct {

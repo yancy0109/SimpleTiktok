@@ -15,11 +15,7 @@
 */
 drop database IF EXISTS `douyin`;
 create database `douyin` character set utf8 collate utf8_bin;
-<<<<<<< HEAD
-use `douyin`
-=======
 use `douyin`;
->>>>>>> 780c8cdfb60439bd17083804e31268f906294740
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -80,10 +76,7 @@ DROP TABLE IF EXISTS `video`;
 CREATE TABLE `video`  (
   `id` int(0) NOT NULL AUTO_INCREMENT,
   `author_id` int(0) NOT NULL,
-<<<<<<< HEAD
-=======
 	`title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
->>>>>>> 780c8cdfb60439bd17083804e31268f906294740
   `play_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `cover_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `create_date` datetime(0) NOT NULL,
